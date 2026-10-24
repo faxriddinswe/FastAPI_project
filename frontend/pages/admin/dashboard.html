@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard — PDP Education</title>
+    <link rel="stylesheet" href="../../assets/css/style.css" />
+</head>
+
+<body>
+    <div class="dashboard-layout">
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <img src="../../assets/img/pdp-education.png" alt="PDP Education"
+                    style="max-width: 160px; background: white; padding: 8px 12px; border-radius: 8px;">
+                <div class="badge badge-danger mt-4">Administrator</div>
+            </div>
+            <nav class="sidebar-nav">
+                <a class="nav-item active" href="#overview" onclick="showSection('overview')">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <rect x="3" y="3" width="7" height="7" />
+                        <rect x="14" y="3" width="7" height="7" />
+                        <rect x="3" y="14" width="7" height="7" />
+                        <rect x="14" y="14" width="7" height="7" />
+                    </svg>
+                    Overview
+                </a>
+                <a class="nav-item" href="#teachers" onclick="showSection('teachers')">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round"
+                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    Teachers
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <div style="font-size:13px;color:var(--text-muted);margin-bottom:8px">
+                    <div id="user-name" style="color:var(--text-primary);font-weight:600"></div>
+                    <div id="user-role"></div>
+                </div>
+                <button class="btn btn-secondary btn-full btn-sm" onclick="doLogout()">Sign Out</button>
+            </div>
+        </aside>
+
+        <!-- Main -->
+        <main class="main-content">
+
+            <!-- Overview -->
+            <section id="section-overview">
+                <div class="page-header">
+                    <h1>Admin Overview</h1>
+                    <p>Platform statistics at a glance</p>
+                </div>
+                <div class="stats-grid" id="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Teachers</div>
+                        <div class="stat-value" id="st-teachers">—</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Students</div>
+                        <div class="stat-value" id="st-students">—</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Test Sessions</div>
+                        <div class="stat-value" id="st-sessions">—</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Teachers -->
+            <section id="section-teachers" class="hidden">
+                <div class="page-header flex" style="justify-content:space-between;align-items:center">
+                    <div>
+                        <h1>Manage Teachers</h1>
+                        <p>Create and manage teacher accounts</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="openModal('modal-create-teacher')">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" d="M12 4v16m8-8H4" />
+                        </svg>
+                        Add Teacher
+                    </button>
+                </div>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Subject</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="teachers-tbody">
+                            <tr>
+                                <td colspan="5" class="text-center text-muted">Loading…</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Create Teacher Modal -->
+    <div class="modal-overlay" id="modal-create-teacher">
+        <div class="modal">
+            <button class="modal-close" onclick="closeModal('modal-create-teacher')">✕</button>
+            <div class="modal-title">Add New Teacher</div>
+            <div id="create-teacher-alert"></div>
+            <div class="form-group">
+                <label class="form-label">Full Name</label>
+                <input id="t-name" type="text" class="form-input" placeholder="Akbar Xoliqov" />
+            </div>
+            <div class="form-group">
+                <label class="form-label">Email</label>
+                <input id="t-email" type="email" class="form-input" placeholder="teacher@pdp.uz" />
+            </div>
+            <div class="form-group">
+                <label class="form-label">Password</label>
+                <input id="t-password" type="password" class="form-input"
+                    placeholder="Min 8 chars, A-Z, a-z, 0-9, symbol" />
+            </div>
+            <div class="form-group">
+                <label class="form-label">Subject (optional)</label>
+                <input id="t-subject" type="text" class="form-input" placeholder="Mathematics" />
+            </div>
+            <div class="grid-2">
+                <button class="btn btn-secondary" onclick="closeModal('modal-create-teacher')">Cancel</button>
+                <button class="btn btn-primary" id="btn-create-teacher" onclick="createTeacher()">Create
+                    Teacher</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { api, getUser, clearAuth } from '../../assets/js/api.js';
+        import { requireAuth, initUserDisplay, logout, showToast, openModal, closeModal } from '../../assets/js/utils.js';
+
+        window.openModal = openModal;
+        window.closeModal = closeModal;
+
+        const user = requireAuth('admin');
+        if (!user) throw new Error('Not admin');
+        initUserDisplay();
+
+        window.doLogout = logout;
+
+        // ── Section switcher ───────────────────────────────────────────────────────
+        window.showSection = function (name) {
+            document.querySelectorAll('section[id^="section-"]').forEach(s => s.classList.add('hidden'));
+            document.getElementById(`section-${name}`)?.classList.remove('hidden');
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+        };
+
+        // ── Load stats ─────────────────────────────────────────────────────────────
+        async function loadStats() {
+            try {
+                const stats = await api.adminStats();
+                document.getElementById('st-teachers').textContent = stats.teachers;
+                document.getElementById('st-students').textContent = stats.students;
+                document.getElementById('st-sessions').textContent = stats.test_sessions;
+            } catch (e) { console.error(e); }
+        }
+
+        // ── Load teachers ──────────────────────────────────────────────────────────
+        async function loadTeachers() {
+            const tbody = document.getElementById('teachers-tbody');
+            try {
+                const list = await api.listTeachers();
+                if (!list.length) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">No teachers yet. Create one!</td></tr>';
+                    return;
+                }
+                tbody.innerHTML = list.map(t => `
+        <tr>
+          <td>${t.full_name}</td>
+          <td>${t.email}</td>
+          <td>${t.subject || '—'}</td>
+          <td><span class="badge ${t.is_active ? 'badge-success' : 'badge-danger'}">${t.is_active ? 'Active' : 'Disabled'}</span></td>
+          <td>
+            <button class="btn btn-danger btn-sm" onclick="deleteTeacher(${t.user_id})">Remove</button>
+          </td>
+        </tr>
+      `).join('');
+            } catch (e) {
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center text-danger">${e.message}</td></tr>`;
+            }
+        }
+
+        window.deleteTeacher = async function (id) {
+            if (!confirm('Disable this teacher account?')) return;
+            try {
+                await api.deleteTeacher(id);
+                showToast('Teacher disabled', 'success');
+                loadTeachers();
+                loadStats();
+            } catch (e) {
+                showToast(e.message, 'error');
+            }
+        };
+
+        window.createTeacher = async function () {
+            const btn = document.getElementById('btn-create-teacher');
+            const alertEl = document.getElementById('create-teacher-alert');
+            alertEl.innerHTML = '';
+
+            const body = {
+                full_name: document.getElementById('t-name').value.trim(),
+                email: document.getElementById('t-email').value.trim(),
+                password: document.getElementById('t-password').value,
+                subject: document.getElementById('t-subject').value.trim() || null,
+            };
+
+            if (!body.full_name || !body.email || !body.password) {
+                alertEl.innerHTML = '<div class="alert alert-danger">Please fill all required fields.</div>';
+                return;
+            }
+
+            btn.disabled = true; btn.textContent = 'Creating…';
+            try {
+                await api.createTeacher(body);
+                showToast('Teacher created successfully!', 'success');
+                closeModal('modal-create-teacher');
+                // reset form
+                ['t-name', 't-email', 't-password', 't-subject'].forEach(id => document.getElementById(id).value = '');
+                loadTeachers(); loadStats();
+            } catch (e) {
+                alertEl.innerHTML = `<div class="alert alert-danger">${e.message}</div>`;
+            } finally {
+                btn.disabled = false; btn.textContent = 'Create Teacher';
+            }
+        };
+
+        // ── Close modal on overlay click ───────────────────────────────────────────
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', e => {
+                if (e.target === overlay) closeModal(overlay.id);
+            });
+        });
+
+        loadStats();
+        loadTeachers();
+    </script>
+</body>
+
+</html>

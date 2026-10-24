@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test Result — PDP Education</title>
+    <link rel="stylesheet" href="../../assets/css/style.css" />
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .bg-glow {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background: radial-gradient(ellipse 600px 400px at 50% 50%, rgba(99, 102, 241, 0.08) 0%, transparent 70%);
+        }
+
+        .result-card {
+            position: relative;
+            z-index: 1;
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            padding: 48px;
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .score-circle {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            margin: 0 auto 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 4px solid var(--bg-elevated);
+            background: var(--bg-base);
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .score-circle.pass {
+            border-color: var(--success);
+            box-shadow: 0 0 30px rgba(16, 185, 129, 0.3);
+        }
+
+        .score-circle.fail {
+            border-color: var(--danger);
+            box-shadow: 0 0 30px rgba(239, 68, 68, 0.3);
+        }
+
+        .score-circle.warning {
+            border-color: var(--warning);
+        }
+
+        .score-val {
+            font-family: 'Outfit', sans-serif;
+            font-size: 40px;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .score-pct {
+            font-size: 20px;
+            color: var(--text-muted);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 24px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-glow"></div>
+    <div class="result-card" id="result-box">
+        <div class="spinner" style="width:40px;height:40px"></div>
+        <p class="mt-4 text-muted">Retrieving results...</p>
+    </div>
+
+    <script type="module">
+        import { api } from '../../assets/js/api.js';
+        import { requireAuth } from '../../assets/js/utils.js';
+
+        requireAuth('student');
+
+        async function loadResult() {
+            const box = document.getElementById('result-box');
+            try {
+                const data = await api.myStats();
+                // The most recent test is normally the last one in the array
+                // But let's just show overall stats or specifically find the one if we had token.
+                // Since student dashboard has all tests, we can just show the most recent session:
+
+                const searchParams = new URLSearchParams(window.location.search);
+                // We don't have a specific endpoint for single student result by token securely yet (it returns questions), 
+                // but we can just grab the latest from their stats.
+
+                if (!data.sessions || data.sessions.length === 0) {
+                    box.innerHTML = `<h3>No tests found</h3><a href="/pages/student/dashboard.html" class="btn btn-secondary mt-4">Dashboard</a>`;
+                    return;
+                }
+
+                // Sort by submitted_at desc
+                data.sessions.sort((a, b) => new Date(b.submitted_at) - new Date(a.submitted_at));
+                const latest = data.sessions[0];
+
+                const isPass = latest.status === 'passed';
+                const isAutoFail = latest.status === 'auto_failed';
+
+                const circleClass = isPass ? 'pass' : 'fail';
+                const badgeClass = isPass ? 'badge-success' : isAutoFail ? 'badge-danger' : 'badge-warning';
+
+                box.innerHTML = `
+        <h1 style="font-family:Outfit;margin-bottom:8px">Test Complete!</h1>
+        <p class="text-muted" style="margin-bottom:32px">${latest.test_title}</p>
+        
+        <div class="score-circle ${circleClass}">
+          <div class="score-val">${latest.score ?? 0}<span style="font-size:24px">%</span></div>
+        </div>
+        
+        <div class="status-badge ${badgeClass}">${latest.status.replace('_', ' ')}</div>
+        
+        ${isAutoFail ? `<div class="alert alert-danger" style="margin-bottom:24px;text-align:left">Test was automatically failed due to exiting full-screen mode multiple times.</div>` : ''}
+        
+        <div class="grid-2 mt-8">
+          <a href="/pages/student/dashboard.html" class="btn btn-secondary">My Dashboard</a>
+        </div>
+      `;
+
+            } catch (e) {
+                box.innerHTML = `<div class="alert alert-danger">${e.message}</div><a href="/pages/student/dashboard.html" class="btn btn-secondary mt-4">Go to Dashboard</a>`;
+            }
+        }
+
+        loadResult();
+    </script>
+</body>
+
+</html>

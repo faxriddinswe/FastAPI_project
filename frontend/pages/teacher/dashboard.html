@@ -1,0 +1,1307 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Teacher Dashboard — PDP Education</title>
+    <link rel="stylesheet" href="/assets/css/style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+
+<body>
+    <div class="dashboard-layout">
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <img src="/assets/img/pdp-university-logo.png" alt="PDP University"
+                    style="max-width: 160px; filter: var(--logo-filter, none);">
+                <div class="badge badge-success mt-2" style="font-size: 10px;">TEACHER PORTAL</div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a id="nav-tests" class="nav-item active" href="/teacher/dashboard"
+                    onclick="showSection('tests', event)">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path
+                            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                    Tests
+                </a>
+                <a id="nav-groups" class="nav-item" href="/teacher/dashboard/groups"
+                    onclick="showSection('groups', event)">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path
+                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    Groups
+                </a>
+                <a id="nav-daily" class="nav-item" href="/teacher/dashboard/daily"
+                    onclick="showSection('daily', event)">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Daily Status
+                </a>
+                <a id="nav-results" class="nav-item" href="/teacher/dashboard/results"
+                    onclick="showSection('results', event)">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path
+                            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                    Student Results
+                </a>
+                <a id="nav-grading" class="nav-item" href="/teacher/dashboard/grading"
+                    onclick="showSection('grading', event)">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path
+                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                    Grading
+                </a>
+                <a id="nav-timetable" class="nav-item" href="/teacher/dashboard/timetable"
+                    onclick="showSection('timetable', event)">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path
+                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    Time Table
+                </a>
+                <a id="nav-settings" class="nav-item" href="/teacher/dashboard/settings"
+                    onclick="showSection('settings', event)">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                    My Profile
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div id="theme-toggle" class="nav-item" onclick="handleThemeToggle()"
+                    style="margin-bottom: 12px; border: 1px solid var(--border);">
+                    <svg id="theme-icon-sun" class="hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path
+                            d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 5a7 7 0 100 14 7 7 0 000-14z" />
+                    </svg>
+                    <svg id="theme-icon-moon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path
+                            d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                    <span id="theme-text">Dark Mode</span>
+                </div>
+
+                <div class="flex gap-3" style="align-items: center; margin-bottom: 16px; padding: 0 4px;">
+                    <img id="user-avatar" src="https://ui-avatars.com/api/?name=Teacher&background=10B981&color=fff"
+                        style="width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary);">
+                    <div style="overflow: hidden;">
+                        <div id="user-name"
+                            style="font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        </div>
+                        <div id="user-role"
+                            style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;"></div>
+                    </div>
+                </div>
+                <button class="btn btn-secondary btn-full btn-sm" onclick="doLogout()">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path
+                            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                    Sign Out
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main -->
+        <main class="main-content">
+
+            <!-- My Tests -->
+            <section id="section-tests">
+                <div class="page-header flex" style="justify-content:space-between;align-items:flex-start">
+                    <div>
+                        <h1>My Tests</h1>
+                        <p>Create and manage your test assignments</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="openModal('modal-create-test')">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" d="M12 4v16m8-8H4" />
+                        </svg>
+                        New Test
+                    </button>
+                </div>
+                <div id="tests-grid"
+                    style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px">
+                    <div class="card text-center text-muted">Loading tests…</div>
+                </div>
+            </section>
+
+            <!-- RESULTS SECTION -->
+            <section id="section-results" class="hidden">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 24px;">
+                    <div>
+                        <h1 style="font-size:32px;font-family:Outfit">Student Results</h1>
+                        <p style="color:var(--text-muted);font-size:16px">Analyze test performance</p>
+                    </div>
+                    <select class="form-select" id="results-test-select" style="max-width:300px"
+                        onchange="loadResults(this.value)"></select>
+                </div>
+
+                <div id="results-table-wrap" class="card hidden" style="padding:0; overflow:hidden">
+                    <div style="padding:16px; border-bottom:1px solid var(--border);">
+                        <input type="text" id="student-search-input" class="form-input"
+                            placeholder="Search by student name..." oninput="filterResultsByName()"
+                            style="max-width:300px" />
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Email</th>
+                                <th>Score / Breakdown</th>
+                                <th>Status / Grade</th>
+                                <th>Violations</th>
+                                <th>Submitted At</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="results-tbody"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- DAILY STATUS SECTION -->
+            <section id="section-daily" class="hidden">
+                <div class="page-header">
+                    <h1>Daily Status</h1>
+                    <p>Track student test activity for today</p>
+                </div>
+                <div class="card" style="padding:0; overflow:hidden">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Email</th>
+                                <th>Group</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="daily-tbody"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- TIMETABLE SECTION -->
+            <section id="section-timetable" class="hidden">
+                <div class="page-header">
+                    <h1>Time Table</h1>
+                    <p>Your weekly teaching schedule</p>
+                </div>
+                <div class="card" style="padding:0; overflow:hidden">
+                    <table class="data-table timetable-table">
+                        <thead>
+                            <tr>
+                                <th>Day</th>
+                                <th>#</th>
+                                <th>Time</th>
+                                <th>Room</th>
+                                <th>Subject</th>
+                                <th>Group</th>
+                            </tr>
+                        </thead>
+                        <tbody id="timetable-tbody"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- GRADING SECTION -->
+            <section id="section-grading" class="hidden">
+                <div class="page-header">
+                    <h1>Manual Grading</h1>
+                    <p>Grade subjective answers and review performance</p>
+                </div>
+                <div id="ungraded-list" class="grid-2">
+                    <div class="card text-center text-muted">Loading ungraded submissions...</div>
+                </div>
+            </section>
+
+            <!-- SETTINGS / PROFILE SECTION -->
+            <section id="section-settings" class="hidden">
+                <div class="page-header">
+                    <h1>My Profile</h1>
+                    <p>Update your personal information and profile picture</p>
+                </div>
+                <div class="grid-2">
+                    <div class="card">
+                        <div class="flex-center" style="flex-direction: column; margin-bottom: 24px;">
+                            <div style="position: relative;">
+                                <img id="settings-avatar"
+                                    src="https://ui-avatars.com/api/?name=Teacher&background=10B981&color=fff"
+                                    style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 4px solid var(--primary);">
+                                <button class="btn btn-secondary btn-sm"
+                                    style="position: absolute; bottom: 0; right: 0; padding: 6px; border-radius: 50%;"
+                                    onclick="document.getElementById('avatar-upload').click()">
+                                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path
+                                            d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                                        <path d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    </svg>
+                                </button>
+                                <input type="file" id="avatar-upload" class="hidden" accept="image/*"
+                                    onchange="handleAvatarUpload(event)">
+                            </div>
+                            <h2 id="settings-full-name" style="margin-top: 16px;">Full Name</h2>
+                            <p id="settings-email" class="text-muted">teacher@pdp.uz</p>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" id="prof-full-name" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Phone Number</label>
+                            <input type="text" id="prof-phone" class="form-input" placeholder="+998 -- --- -- --">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Address</label>
+                            <textarea id="prof-address" class="form-textarea"></textarea>
+                        </div>
+                        <button class="btn btn-primary btn-full" onclick="saveProfile()">Save Profile</button>
+                    </div>
+                    <div class="card">
+                        <h3 style="margin-bottom: 16px;">Personal Details</h3>
+                        <div class="form-group">
+                            <label class="form-label">Gender</label>
+                            <select id="prof-gender" class="form-select">
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Birth Date</label>
+                            <input type="date" id="prof-birth" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Nationality</label>
+                            <input type="text" id="prof-nation" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Passport ID</label>
+                            <input type="text" id="prof-passport" class="form-input">
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- GROUPS SECTION -->
+            <section id="section-groups" class="hidden">
+                <div class="page-header flex" style="justify-content:space-between;align-items:flex-start">
+                    <div>
+                        <h1>My Groups</h1>
+                        <p>Manage your student groups</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="openModal('modal-create-group')">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" d="M12 4v16m8-8H4" />
+                        </svg>
+                        New Group
+                    </button>
+                </div>
+                <div id="groups-grid"
+                    style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px">
+                    <div class="card text-center text-muted">Loading groups…</div>
+                </div>
+            </section>
+
+            <!-- GROUP DETAILS SECTION -->
+            <section id="section-group-details" class="hidden">
+                <div class="mb-4">
+                    <button class="btn btn-secondary btn-sm"
+                        onclick="showSection('groups', {preventDefault:()=>{}, currentTarget:{getAttribute:()=>'/teacher/dashboard/groups'}})">
+                        &larr; Back to Groups
+                    </button>
+                </div>
+                <div class="page-header flex"
+                    style="justify-content:space-between;align-items:flex-start; margin-bottom: 24px;">
+                    <div>
+                        <h1 id="gd-title">Group Details</h1>
+                        <p style="color:var(--text-muted)">Manage students and assign tests specifically to this group
+                        </p>
+                    </div>
+                    <button class="btn btn-primary" onclick="openAddStudentsModal(window.currentGroupId)">
+                        + Add Students
+                    </button>
+                </div>
+
+                <div class="grid-2">
+                    <!-- Students Column -->
+                    <div class="card" style="padding:0; overflow:hidden">
+                        <div
+                            style="padding:16px; border-bottom:1px solid var(--border); background:var(--bg-elevated);">
+                            <strong>Enrolled Students</strong>
+                        </div>
+                        <div id="gd-students-list" style="max-height: 400px; overflow-y: auto;">
+                            <!-- Students go here -->
+                        </div>
+                    </div>
+
+                    <!-- Tests/Assignments Column -->
+                    <div class="card" style="padding:0; overflow:hidden">
+                        <div
+                            style="padding:16px; border-bottom:1px solid var(--border); background:var(--bg-elevated);">
+                            <strong>Generate Test Link for this Group</strong>
+                        </div>
+                        <div id="gd-tests-list" style="max-height: 400px; overflow-y: auto; padding:16px;">
+                            <!-- Tests go here -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Edit Test Modal -->
+            <div class="modal-overlay" id="modal-edit-test">
+                <div class="modal" style="max-width:620px">
+                    <button class="modal-close" onclick="closeModal('modal-edit-test')">✕</button>
+                    <div class="modal-title">Edit Test Details</div>
+                    <div id="edit-test-alert"></div>
+                    <input type="hidden" id="edit-test-id" />
+                    <div class="form-group">
+                        <label class="form-label">Test Title</label>
+                        <input id="et-title" type="text" class="form-input" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Topic / Subject</label>
+                        <input id="et-topic" type="text" class="form-input" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea id="et-desc" class="form-textarea"></textarea>
+                    </div>
+                    <div style="border-top:1px solid var(--border);margin:20px 0;padding-top:20px">
+                        <div class="flex" style="justify-content:space-between;align-items:center;margin-bottom:12px">
+                            <strong style="font-size:14px">Questions</strong>
+                            <button class="btn btn-secondary btn-sm"
+                                onclick="addQuestionRow('et-questions-container')">+ Add Question</button>
+                        </div>
+                        <div id="et-questions-container"></div>
+                    </div>
+
+                    <div class="grid-2">
+                        <button class="btn btn-secondary" onclick="closeModal('modal-edit-test')">Cancel</button>
+                        <button class="btn btn-primary" id="btn-edit-test" onclick="saveEditTest()">Save
+                            Changes</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Create Test Modal -->
+            <div class="modal-overlay" id="modal-create-test">
+                <div class="modal" style="max-width:620px">
+                    <button class="modal-close" onclick="closeModal('modal-create-test')">✕</button>
+                    <div class="modal-title">Create New Test</div>
+                    <div id="create-test-alert"></div>
+                    <div class="form-group">
+                        <label class="form-label">Test Title</label>
+                        <input id="ct-title" type="text" class="form-input" placeholder="Python Basics Quiz" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Topic / Subject</label>
+                        <input id="ct-topic" type="text" class="form-input" placeholder="Python, Data Structures…" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Time Limit (minutes) <span
+                                style="color:var(--text-muted);font-size:12px">— optional, leave blank for no
+                                limit</span></label>
+                        <input id="ct-time" type="number" class="form-input" placeholder="e.g. 30" min="1" max="300" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea id="ct-desc" class="form-textarea" placeholder="Optional description…"></textarea>
+                    </div>
+
+                    <div style="border-top:1px solid var(--border);margin:20px 0;padding-top:20px">
+                        <div class="flex" style="justify-content:space-between;align-items:center;margin-bottom:12px">
+                            <strong style="font-size:14px">Questions</strong>
+                            <button class="btn btn-secondary btn-sm" onclick="addQuestionRow('questions-container')">+
+                                Add Question</button>
+                        </div>
+                        <div id="questions-container"></div>
+                    </div>
+
+                    <div class="grid-2">
+                        <button class="btn btn-secondary" onclick="closeModal('modal-create-test')">Cancel</button>
+                        <button class="btn btn-primary" id="btn-create-test" onclick="createTest()">Create Test</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Generate Link Modal -->
+            <div class="modal-overlay" id="modal-gen-link">
+                <div class="modal">
+                    <button class="modal-close" onclick="closeModal('modal-gen-link')">✕</button>
+                    <div class="modal-title">Generate Test Link</div>
+                    <div id="gen-link-alert"></div>
+                    <input type="hidden" id="link-test-id" />
+                    <div class="form-group">
+                        <label class="form-label">Assign to Group (Optional)</label>
+                        <select id="link-group" class="form-select">
+                            <option value="">-- All Students (Public Link) --</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Available From</label>
+                        <input id="link-start" type="datetime-local" class="form-input" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Available Until</label>
+                        <input id="link-end" type="datetime-local" class="form-input" />
+                    </div>
+                    <div id="link-result" class="hidden">
+                        <div class="alert alert-success" style="word-break:break-all" id="link-url"></div>
+                        <button class="btn btn-secondary btn-sm btn-full" onclick="copyLink()">📋 Copy Link</button>
+                    </div>
+                    <div class="grid-2 mt-4">
+                        <button class="btn btn-secondary" onclick="closeModal('modal-gen-link')">Close</button>
+                        <button class="btn btn-primary" id="btn-gen-link" onclick="generateLink()">Generate</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Create Group Modal -->
+            <div class="modal-overlay" id="modal-create-group">
+                <div class="modal">
+                    <button class="modal-close" onclick="closeModal('modal-create-group')">✕</button>
+                    <div class="modal-title">Create New Group</div>
+                    <div id="create-group-alert"></div>
+                    <div class="form-group">
+                        <label class="form-label">Group Name</label>
+                        <input id="cg-name" type="text" class="form-input" placeholder="e.g. Python Beginners 101" />
+                    </div>
+                    <div class="grid-2 mt-4">
+                        <button class="btn btn-secondary" onclick="closeModal('modal-create-group')">Cancel</button>
+                        <button class="btn btn-primary" id="btn-create-group" onclick="createGroup()">Create</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add Students Modal -->
+            <div class="modal-overlay" id="modal-add-students">
+                <div class="modal">
+                    <button class="modal-close" onclick="closeModal('modal-add-students')">✕</button>
+                    <div class="modal-title">Add Students to Group</div>
+                    <div id="add-students-alert"></div>
+                    <input type="hidden" id="add-students-group-id" />
+                    <div class="form-group">
+                        <label class="form-label">Student Emails (one per line)</label>
+                        <textarea id="as-emails" class="form-textarea"
+                            placeholder="student1@example.com&#10;student2@example.com"></textarea>
+                    </div>
+                    <div class="grid-2 mt-4">
+                        <button class="btn btn-secondary" onclick="closeModal('modal-add-students')">Cancel</button>
+                        <button class="btn btn-primary" id="btn-add-students" onclick="addStudentsToGroup()">Add
+                            Students</button>
+                    </div>
+                </div>
+            </div>
+
+            <script type="module">
+                import { api } from '../../assets/js/api.js?v=4';
+                import { requireAuth, initUserDisplay, logout, showToast, openModal, closeModal, formatDate } from '../../assets/js/utils.js';
+
+                window.openModal = openModal;
+                window.closeModal = closeModal;
+
+                const user = requireAuth('teacher');
+                if (!user) throw new Error('Not teacher');
+                initUserDisplay();
+                window.doLogout = logout;
+
+                // ── Section switcher ───────────────────────────────────────────────────────
+                window.showSection = function (name, event) {
+                    if (event) {
+                        event.preventDefault();
+                        const targetUrl = event.currentTarget.getAttribute('href');
+                        window.history.pushState({}, '', targetUrl);
+                    }
+                    document.querySelectorAll('section[id^="section-"]').forEach(s => s.classList.add('hidden'));
+                    const section = document.getElementById(`section-${name}`);
+                    if (section) section.classList.remove('hidden');
+
+                    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+                    document.getElementById(`nav-${name}`)?.classList.add('active');
+
+                    if (name === 'groups') loadGroups();
+                    if (name === 'results') loadTests(); // To populate dropdown
+                    if (name === 'daily') loadDailyStatus();
+                    if (name === 'timetable') loadTimetable();
+                    if (name === 'grading') loadUngraded();
+                    if (name === 'settings') loadProfile();
+                };
+
+                window.addEventListener('popstate', () => {
+                    const loc = window.location.pathname;
+                    if (loc.includes('/groups')) showSection('groups');
+                    else if (loc.includes('/results')) showSection('results');
+                    else if (loc.includes('/daily')) showSection('daily');
+                    else if (loc.includes('/timetable')) showSection('timetable');
+                    else if (loc.includes('/grading')) showSection('grading');
+                    else if (loc.includes('/settings')) showSection('settings');
+                    else showSection('tests');
+                });
+
+                // ── Theme Toggle ──────────────────────────────────────────────────────────
+                import { toggleTheme, initTheme } from '../../assets/js/utils.js';
+
+                window.handleThemeToggle = function () {
+                    const newTheme = toggleTheme();
+                    updateThemeUI(newTheme);
+                };
+
+                function updateThemeUI(theme) {
+                    const text = document.getElementById('theme-text');
+                    const sun = document.getElementById('theme-icon-sun');
+                    const moon = document.getElementById('theme-icon-moon');
+                    if (!text || !sun || !moon) return;
+
+                    if (theme === 'dark') {
+                        text.textContent = 'Light Mode';
+                        sun.classList.remove('hidden');
+                        moon.classList.add('hidden');
+                    } else {
+                        text.textContent = 'Dark Mode';
+                        sun.classList.add('hidden');
+                        moon.classList.remove('hidden');
+                    }
+                }
+
+                // Init theme on load
+                const currentTheme = localStorage.getItem('pdp_theme') || 'light';
+                updateThemeUI(currentTheme);
+
+                // ── New Section Loaders ─────────────────────────────────────────────────────
+                async function loadDailyStatus() {
+                    const tbody = document.getElementById('daily-tbody');
+                    tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">Loading...</td></tr>';
+                    try {
+                        const data = await api.getTeacherAttendance();
+                        tbody.innerHTML = data.map(s => `
+                            <tr>
+                                <td><strong>${s.full_name}</strong></td>
+                                <td>${s.email}</td>
+                                <td>${s.group_name}</td>
+                                <td>
+                                    <span class="badge ${s.taken_today ? 'badge-success' : 'badge-danger'}">
+                                        ${s.taken_today ? 'Completed' : 'No Activity Today'}
+                                    </span>
+                                </td>
+                            </tr>
+                        `).join('');
+                    } catch (e) {
+                        tbody.innerHTML = `<tr><td colspan="4" class="text-danger">${e.message}</td></tr>`;
+                    }
+                }
+
+                async function loadTimetable() {
+                    const tbody = document.getElementById('timetable-tbody');
+                    tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">Loading...</td></tr>';
+                    try {
+                        const data = await api.getTeacherTimetable();
+                        const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+                        tbody.innerHTML = data.map(t => `
+                            <tr>
+                                <td><strong>${days[t.day_of_week]}</strong></td>
+                                <td>${t.lesson_number}</td>
+                                <td>${t.start_time} - ${t.end_time}</td>
+                                <td>${t.room}</td>
+                                <td>${t.subject}</td>
+                                <td><span class="badge badge-primary">${t.group_name}</span></td>
+                            </tr>
+                        `).join('') || '<tr><td colspan="6" class="text-center text-muted">No schedule found.</td></tr>';
+                    } catch (e) {
+                        tbody.innerHTML = `<tr><td colspan="6" class="text-danger">${e.message}</td></tr>`;
+                    }
+                }
+
+                async function loadUngraded() {
+                    const list = document.getElementById('ungraded-list');
+                    list.innerHTML = '<div class="card text-center text-muted">Loading...</div>';
+                    try {
+                        const data = await api.getUngradedSessions();
+                        if (!data.length) {
+                            list.innerHTML = '<div class="card text-center text-muted" style="grid-column: 1/-1">All caught up! No ungraded submissions.</div>';
+                            return;
+                        }
+                        list.innerHTML = data.map(s => `
+                            <div class="card">
+                                <h3 style="margin-bottom:8px">${s.student_name}</h3>
+                                <p class="text-muted" style="font-size:14px; margin-bottom:12px">${s.test_title}</p>
+                                <div style="display:flex; justify-content:space-between; align-items:center;">
+                                    <strong>Score: ${s.score}%</strong>
+                                    <button class="btn btn-primary btn-sm" onclick="viewResults(${s.test_id})">Grade Now</button>
+                                </div>
+                            </div>
+                        `).join('');
+                    } catch (e) {
+                        list.innerHTML = `<div class="card text-danger">${e.message}</div>`;
+                    }
+                }
+
+                async function loadProfile() {
+                    try {
+                        const p = await api.getTeacherProfile();
+                        document.getElementById('prof-full-name').value = p.full_name || '';
+                        document.getElementById('prof-phone').value = p.phone || '';
+                        document.getElementById('prof-address').value = p.address || '';
+                        document.getElementById('prof-gender').value = p.gender || 'Male';
+                        document.getElementById('prof-birth').value = p.birth_date ? p.birth_date.split('T')[0] : '';
+                        document.getElementById('prof-nation').value = p.nationality || '';
+                        document.getElementById('prof-passport').value = p.passport_id || '';
+
+                        document.getElementById('settings-full-name').textContent = p.full_name;
+                        document.getElementById('settings-email').textContent = p.email;
+                        if (p.avatar_url) document.getElementById('settings-avatar').src = p.avatar_url;
+                    } catch (e) {
+                        showToast(e.message, 'error');
+                    }
+                }
+
+                window.saveProfile = async function () {
+                    const payload = {
+                        full_name: document.getElementById('prof-full-name').value,
+                        phone: document.getElementById('prof-phone').value,
+                        address: document.getElementById('prof-address').value,
+                        gender: document.getElementById('prof-gender').value,
+                        birth_date: document.getElementById('prof-birth').value || null,
+                        nationality: document.getElementById('prof-nation').value,
+                        passport_id: document.getElementById('prof-passport').value,
+                    };
+                    try {
+                        await api.updateTeacherProfile(payload);
+                        showToast('Profile updated!', 'success');
+                        initUserDisplay(); // Refresh sidebar
+                    } catch (e) {
+                        showToast(e.message, 'error');
+                    }
+                };
+
+                window.handleAvatarUpload = async function (event) {
+                    const file = event.target.files[0];
+                    if (!file) return;
+                    // Simulating upload for now, ideally you'd POST to an upload endpoint
+                    // For this demo, we'll use a FileReader to show it works visually
+                    const reader = new FileReader();
+                    reader.onload = async (e) => {
+                        const base64 = e.target.result;
+                        document.getElementById('settings-avatar').src = base64;
+                        try {
+                            await api.updateTeacherProfile({ avatar_url: base64 });
+                            showToast('Avatar updated!', 'success');
+                            initUserDisplay();
+                        } catch (err) { showToast(err.message, 'error'); }
+                    };
+                    reader.readAsDataURL(file);
+                };
+
+                // ── Load tests ─────────────────────────────────────────────────────────────
+                let allTests = [];
+
+                async function loadTests() {
+                    const grid = document.getElementById('tests-grid');
+                    const sel = document.getElementById('results-test-select');
+                    try {
+                        allTests = await api.listTests();
+                        sel.innerHTML = '<option value="">— Choose a test —</option>' +
+                            allTests.map(t => `<option value="${t.id}">${t.title}</option>`).join('');
+
+                        if (!allTests.length) {
+                            grid.innerHTML = '<div class="card text-center text-muted">No tests yet. Create your first one!</div>';
+                            return;
+                        }
+                        grid.innerHTML = allTests.map(t => `
+        <div class="card" style="position:relative; overflow:hidden;">
+          <div style="position:absolute; top:12px; right:12px; display:flex; gap:8px; z-index:10;">
+              <button class="btn-icon" onclick="duplicateTest(${t.id})" title="Duplicate Test">
+                 <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"/></svg>
+              </button>
+              <button class="btn-icon" onclick="openEditTestModal(${t.id})" title="Edit Test">
+                 <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+              </button>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px; padding-right: 80px;">
+            <div>
+              <div style="font-family:Outfit,sans-serif;font-size:18px;font-weight:700">${t.title}</div>
+              ${t.topic ? `<span class="badge badge-cyan" style="margin-top:6px">${t.topic}</span>` : ''}
+            </div>
+          </div>
+          ${t.description ? `<p style="font-size:13px;color:var(--text-muted);margin-bottom:16px">${t.description}</p>` : ''}
+          <div class="flex gap-2" style="flex-wrap:wrap">
+            <button class="btn btn-primary btn-sm" onclick="openLinkModal(${t.id})">
+              🔗 Generate Link
+            </button>
+            <button class="btn btn-secondary btn-sm" onclick="viewResults(${t.id})">
+              📊 Results
+            </button>
+          </div>
+        </div>
+      `).join('');
+                    } catch (e) {
+                        grid.innerHTML = `<div class="card text-danger">${e.message}</div>`;
+                    }
+                }
+
+                window.duplicateTest = async function (testId) {
+                    if (!confirm("Duplicating this test will create a new copy. Continue?")) return;
+                    try {
+                        await api.duplicateTest(testId);
+                        showToast('Test duplicated!', 'success');
+                        loadTests();
+                    } catch (e) {
+                        showToast(e.message, 'error');
+                    }
+                };
+
+                // ── Question rows ──────────────────────────────────────────────────────────
+                let qCount = 0;
+                window.addQuestionRow = function (containerId = 'questions-container', existingData = null) {
+                    qCount++;
+                    const n = qCount;
+                    const div = document.createElement('div');
+                    div.id = `q-row-${n}`;
+                    div.style.cssText = 'background:var(--bg-elevated);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px';
+
+                    const qType = existingData ? existingData.question_type : 'multiple_choice';
+                    const qText = existingData ? existingData.text : '';
+                    const qAns = existingData ? existingData.correct_answer : '';
+
+                    // safely handle matching options object
+                    const leftVals = (existingData && existingData.options && existingData.options.left) ? existingData.options.left.join('\\n') : '';
+                    const rightVals = (existingData && existingData.options && existingData.options.right) ? existingData.options.right.join('\\n') : '';
+
+                    div.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <div style="font-size:13px;font-weight:600;color:var(--primary-light)">Question #${n}</div>
+        <button class="btn btn-secondary btn-sm" style="padding:4px 8px; font-size:11px;" onclick="duplicateQuestionRow(${n}, '${containerId}')">
+           + Duplicate
+        </button>
+      </div>
+      <div class="form-group">
+        <label class="form-label text-sm mb-1">Type:</label>
+        <select class="form-select mb-2" id="q${n}-type" onchange="toggleQuestionType(${n})">
+            <option value="multiple_choice" ${qType === 'multiple_choice' ? 'selected' : ''}>Multiple Choice</option>
+            <option value="open_ended" ${qType === 'open_ended' ? 'selected' : ''}>Open Ended</option>
+            <option value="true_false" ${qType === 'true_false' ? 'selected' : ''}>True / False</option>
+            <option value="matching" ${qType === 'matching' ? 'selected' : ''}>Matching (IELTS style)</option>
+            <option value="code_editor" ${qType === 'code_editor' ? 'selected' : ''}>Code Editor</option>
+        </select>
+        <input class="form-input" id="q${n}-text" placeholder="Question text…" value="${qText.replace(/"/g, '&quot;')}" />
+      </div>
+      <div class="grid-2" style="margin-bottom:8px; display:${qType === 'multiple_choice' ? 'grid' : 'none'}" id="q${n}-options-grid">
+        <input class="form-input" id="q${n}-a" placeholder="Option A" value="${existingData && qType === 'multiple_choice' && existingData.options ? (existingData.options[0] || '').replace(/"/g, '&quot;') : ''}" />
+        <input class="form-input" id="q${n}-b" placeholder="Option B" value="${existingData && qType === 'multiple_choice' && existingData.options ? (existingData.options[1] || '').replace(/"/g, '&quot;') : ''}" />
+        <input class="form-input" id="q${n}-c" placeholder="Option C" value="${existingData && qType === 'multiple_choice' && existingData.options ? (existingData.options[2] || '').replace(/"/g, '&quot;') : ''}" />
+        <input class="form-input" id="q${n}-d" placeholder="Option D" value="${existingData && qType === 'multiple_choice' && existingData.options ? (existingData.options[3] || '').replace(/"/g, '&quot;') : ''}" />
+      </div>
+      <div class="grid-2" style="margin-bottom:8px; display:${qType === 'matching' ? 'grid' : 'none'}" id="q${n}-match-grid">
+         <textarea class="form-textarea" id="q${n}-match-left" placeholder="Left items (one per line)">${leftVals}</textarea>
+         <textarea class="form-textarea" id="q${n}-match-right" placeholder="Right items (one per line, incl distractions)">${rightVals}</textarea>
+         <div style="grid-column: 1 / -1; font-size:12px; color:var(--text-muted)">
+            Correct Answer format: {"Left 1":"Right Match", "Left 2":"Right Match"}
+         </div>
+      </div>
+      <div class="flex gap-2" style="align-items:center; flex-wrap: wrap;">
+        <label class="form-label" style="margin:0;white-space:nowrap;width:100%">Correct Answer:</label>
+        <textarea class="form-textarea" style="display:${qType === 'code_editor' ? 'block' : 'none'}; width: 100%; font-family: monospace;" id="q${n}-ans-code" placeholder="Write exact correct code...">${qType === 'code_editor' ? qAns.replace(/</g, '&lt;').replace(/>/g, '&gt;') : ''}</textarea>
+        <div style="display:flex; gap:8px; flex:1; width:100%">
+            <input type="text" class="form-input" id="q${n}-ans" placeholder="A, True, or full answer..." style="flex:1; display:${qType !== 'code_editor' ? 'block' : 'none'};" value="${qAns.replace(/"/g, '&quot;')}" />
+            <button class="btn btn-danger btn-sm" onclick="document.getElementById('q-row-${n}').remove()">Remove</button>
+        </div>
+      </div>
+    `;
+                    document.getElementById(containerId).appendChild(div);
+                };
+
+                window.duplicateQuestionRow = function (n, containerId) {
+                    const type = document.getElementById(`q${n}-type`).value;
+                    const text = document.getElementById(`q${n}-text`).value;
+                    const ans = type === 'code_editor' ? document.getElementById(`q${n}-ans-code`).value : document.getElementById(`q${n}-ans`).value;
+                    let options = null;
+
+                    if (type === 'multiple_choice') {
+                        options = [
+                            document.getElementById(`q${n}-a`).value,
+                            document.getElementById(`q${n}-b`).value,
+                            document.getElementById(`q${n}-c`).value,
+                            document.getElementById(`q${n}-d`).value
+                        ];
+                    } else if (type === 'matching') {
+                        options = {
+                            left: document.getElementById(`q${n}-match-left`).value.split('\n'),
+                            right: document.getElementById(`q${n}-match-right`).value.split('\n')
+                        };
+                    } else if (type === 'true_false') {
+                        options = null;
+                    }
+                    window.addQuestionRow(containerId, { question_type: type, text, correct_answer: ans, options });
+                };
+
+                window.toggleQuestionType = function (n) {
+                    const type = document.getElementById(`q${n}-type`).value;
+                    const grid = document.getElementById(`q${n}-options-grid`);
+                    const matchGrid = document.getElementById(`q${n}-match-grid`);
+
+                    const ansInput = document.getElementById(`q${n}-ans`);
+                    const ansCode = document.getElementById(`q${n}-ans-code`);
+
+                    if (ansInput && ansCode) {
+                        if (type === 'code_editor') {
+                            ansInput.style.display = 'none';
+                            ansCode.style.display = 'block';
+                        } else {
+                            ansInput.style.display = 'block';
+                            ansCode.style.display = 'none';
+                        }
+                    }
+
+                    if (type === 'multiple_choice') {
+                        grid.style.display = 'grid';
+                        if (matchGrid) matchGrid.style.display = 'none';
+                    } else if (type === 'matching') {
+                        grid.style.display = 'none';
+                        if (matchGrid) matchGrid.style.display = 'grid';
+                    } else {
+                        grid.style.display = 'none';
+                        if (matchGrid) matchGrid.style.display = 'none';
+                    }
+                };
+
+                function extractQuestionsFromContainer(containerId) {
+                    const questions = [];
+                    document.querySelectorAll(`#${containerId} [id^="q-row-"]`).forEach(row => {
+                        const n = row.id.split('-')[2];
+                        const type = document.getElementById(`q${n}-type`).value;
+                        const text = document.getElementById(`q${n}-text`)?.value.trim();
+                        let ans = document.getElementById(`q${n}-ans`)?.value.trim();
+                        if (type === 'code_editor') {
+                            ans = document.getElementById(`q${n}-ans-code`)?.value.trim();
+                        }
+
+                        if (text && ans) {
+                            if (type === 'multiple_choice') {
+                                const a = document.getElementById(`q${n}-a`)?.value.trim();
+                                const b = document.getElementById(`q${n}-b`)?.value.trim();
+                                const c = document.getElementById(`q${n}-c`)?.value.trim();
+                                const d = document.getElementById(`q${n}-d`)?.value.trim();
+                                questions.push({ text, options: [a, b, c || '', d || ''], correct_answer: ans, question_type: type });
+                            } else if (type === 'matching') {
+                                const matchLeft = document.getElementById(`q${n}-match-left`)?.value.split('\\n').filter(Boolean) || [];
+                                const matchRight = document.getElementById(`q${n}-match-right`)?.value.split('\\n').filter(Boolean) || [];
+                                questions.push({ text, options: { left: matchLeft, right: matchRight }, correct_answer: ans, question_type: type });
+                            } else {
+                                questions.push({ text, options: null, correct_answer: ans, question_type: type });
+                            }
+                        }
+                    });
+                    return questions;
+                }
+
+                // ── Create test ────────────────────────────────────────────────────────────
+                window.createTest = async function () {
+                    const alertEl = document.getElementById('create-test-alert');
+                    alertEl.innerHTML = '';
+                    const btn = document.getElementById('btn-create-test');
+
+                    const title = document.getElementById('ct-title').value.trim();
+                    const topic = document.getElementById('ct-topic').value.trim();
+                    const desc = document.getElementById('ct-desc').value.trim();
+                    const timeRaw = document.getElementById('ct-time').value.trim();
+                    const time_limit_minutes = timeRaw ? parseInt(timeRaw, 10) : null;
+
+                    if (!title) { alertEl.innerHTML = '<div class="alert alert-danger">Title is required.</div>'; return; }
+
+                    const questions = extractQuestionsFromContainer('questions-container');
+
+                    btn.disabled = true; btn.textContent = 'Creating…';
+                    try {
+                        await api.createTest({ title, topic: topic || null, description: desc || null, time_limit_minutes, questions });
+                        showToast('Test created successfully!', 'success');
+                        closeModal('modal-create-test');
+                        qCount = 0;
+                        document.getElementById('questions-container').innerHTML = '';
+                        ['ct-title', 'ct-topic', 'ct-desc', 'ct-time'].forEach(id => document.getElementById(id).value = '');
+                        loadTests();
+                    } catch (e) {
+                        alertEl.innerHTML = `<div class="alert alert-danger">${e.message}</div>`;
+                    } finally {
+                        btn.disabled = false; btn.textContent = 'Create Test';
+                    }
+                };
+
+                // ── Generate link ──────────────────────────────────────────────────────────
+                window.openLinkModal = function (testId) {
+                    document.getElementById('link-test-id').value = testId;
+                    document.getElementById('link-result').classList.add('hidden');
+                    document.getElementById('gen-link-alert').innerHTML = '';
+
+                    const now = new Date();
+                    const tzOffset = now.getTimezoneOffset() * 60000;
+                    const localNow = new Date(now.getTime() - tzOffset);
+                    const localLater = new Date(localNow.getTime() + 2 * 3600 * 1000);
+
+                    document.getElementById('link-start').value = localNow.toISOString().slice(0, 16);
+                    document.getElementById('link-end').value = localLater.toISOString().slice(0, 16);
+                    openModal('modal-gen-link');
+                };
+
+                let generatedLink = '';
+                window.generateLink = async function () {
+                    const testId = document.getElementById('link-test-id').value;
+                    const groupId = document.getElementById('link-group').value;
+                    const start = document.getElementById('link-start').value;
+                    const end = document.getElementById('link-end').value;
+                    const alertEl = document.getElementById('gen-link-alert');
+                    const btn = document.getElementById('btn-gen-link');
+                    alertEl.innerHTML = '';
+
+                    if (!start || !end) { alertEl.innerHTML = '<div class="alert alert-danger">Set both times.</div>'; return; }
+
+                    btn.disabled = true; btn.textContent = 'Generating…';
+                    try {
+                        const payload = { start_time: new Date(start).toISOString(), end_time: new Date(end).toISOString() };
+                        if (groupId) payload.group_id = parseInt(groupId, 10);
+                        const data = await api.generateLink(testId, payload);
+                        generatedLink = `${window.location.origin}${data.url || ('/pages/test/take.html?token=' + data.token)}`;
+                        document.getElementById('link-url').textContent = generatedLink;
+                        document.getElementById('link-result').classList.remove('hidden');
+                        showToast('Link generated!', 'success');
+                    } catch (e) {
+                        alertEl.innerHTML = `<div class="alert alert-danger">${e.message}</div>`;
+                    } finally {
+                        btn.disabled = false; btn.textContent = 'Generate';
+                    }
+                };
+
+                window.copyLink = function () {
+                    navigator.clipboard.writeText(generatedLink);
+                    showToast('Link copied to clipboard!', 'success');
+                };
+
+                // ── View results ───────────────────────────────────────────────────────────
+                window.viewResults = function (testId) {
+                    showSection('results', document.querySelectorAll('.nav-item')[1]);
+                    document.getElementById('results-test-select').value = testId;
+                    loadResults(testId);
+                };
+
+                window.loadResults = async function (testId) {
+                    const wrap = document.getElementById('results-table-wrap');
+                    const tbody = document.getElementById('results-tbody');
+                    if (!testId) { wrap.classList.add('hidden'); return; }
+                    wrap.classList.remove('hidden');
+                    tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">Loading…</td></tr>';
+                    document.getElementById('student-search-input').value = ''; // Reset UI search
+                    try {
+                        window.currentTestResults = await api.testResults(testId);
+                        renderResultsTable(window.currentTestResults, testId);
+                    } catch (e) {
+                        tbody.innerHTML = `<tr><td colspan="7" class="text-danger">${e.message}</td></tr>`;
+                    }
+                };
+
+                window.renderResultsTable = function (results, testId) {
+                    const tbody = document.getElementById('results-tbody');
+                    if (!results || !results.length) {
+                        tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">No submissions found.</td></tr>';
+                        return;
+                    }
+                    tbody.innerHTML = results.map(r => `
+        <tr>
+          <td class="student-name-col">${r.student_name}</td>
+          <td style="font-size:12px">${r.student_email}</td>
+          <td><strong>${r.score ?? '—'}%</strong><br/><small class="text-muted">${r.correct_answers || 0} / ${r.total_questions || 0}</small></td>
+          <td>
+            <span class="badge ${r.status === 'passed' ? 'badge-success' : r.status === 'auto_failed' ? 'badge-danger' : 'badge-warning'}">${r.status.replace('_', ' ')}</span>
+            ${r.is_graded ? `<span class="badge badge-cyan" style="display:block;margin-top:4px">${r.teacher_grade}</span>` : ''}
+          </td>
+          <td>${r.violations}</td>
+          <td style="font-size:12px">${formatDate(r.submitted_at)}</td>
+          <td>
+             ${(r.status === 'failed' || r.status === 'auto_failed') ? '<span class="text-muted">Failed (No Grade)</span>' :
+                            !r.is_graded ? `
+                <select id="grade-sel-${r.session_id}" class="form-select" style="min-width:110px; margin-bottom:4px; font-size:12px; padding:4px;">
+                    <option value="Pass">Pass</option>
+                    <option value="Merit">Merit</option>
+                    <option value="Distinction">Distinction</option>
+                </select>
+                <button class="btn btn-primary btn-sm btn-full" onclick="gradeStudent(${r.session_id}, ${testId})">✔ Grade</button>
+             ` : '<span class="text-muted">Graded</span>'}
+          </td>
+        </tr>
+      `).join('');
+                };
+
+                window.filterResultsByName = function () {
+                    const query = document.getElementById('student-search-input').value.toLowerCase();
+                    const testId = document.getElementById('results-test-select').value;
+                    if (!window.currentTestResults) return;
+
+                    const filtered = window.currentTestResults.filter(r =>
+                        r.student_name.toLowerCase().includes(query)
+                    );
+                    renderResultsTable(filtered, testId);
+                };
+
+                window.gradeStudent = async function (sessionId, testId) {
+                    const grade = document.getElementById(`grade-sel-${sessionId}`).value;
+                    try {
+                        await api.gradeSession(sessionId, { grade });
+                        showToast(`Student graded as ${grade}`, 'success');
+                        loadResults(testId);
+                    } catch (e) {
+                        showToast(e.message, 'error');
+                    }
+                };
+
+                // ── Edit Tests ─────────────────────────────────────────────────────────────
+                window.openEditTestModal = async function (testId) {
+                    qCount = 0; // Reset question counter for editing
+                    const test = allTests.find(t => t.id === testId);
+                    if (!test) return;
+                    document.getElementById('edit-test-id').value = test.id;
+                    document.getElementById('et-title').value = test.title || '';
+                    document.getElementById('et-topic').value = test.topic || '';
+                    document.getElementById('et-desc').value = test.description || '';
+                    document.getElementById('edit-test-alert').innerHTML = '';
+
+                    const alertBox = document.getElementById('edit-test-alert');
+                    alertBox.innerHTML = `
+                <button class="btn btn-danger btn-sm" style="margin-bottom:12px;" onclick="if(confirm('Delete this test?')) deleteTest(${test.id})">🗑 Delete Test</button>
+            `;
+
+                    const qContainer = document.getElementById('et-questions-container');
+                    qContainer.innerHTML = '<div class="text-muted text-center" style="padding: 20px;">Loading questions...</div>';
+                    openModal('modal-edit-test');
+
+                    try {
+                        const testData = await api.getTest(test.id);
+                        qContainer.innerHTML = '';
+                        if (testData.questions && testData.questions.length > 0) {
+                            testData.questions.forEach(q => addQuestionRow('et-questions-container', q));
+                        } else {
+                            qContainer.innerHTML = '<div class="text-muted text-center">No questions in this test yet.</div>';
+                        }
+                    } catch (e) {
+                        alertBox.innerHTML += `<div class="alert alert-danger">Failed to load test questions.</div>`;
+                    }
+                };
+
+                window.saveEditTest = async function () {
+                    const id = document.getElementById('edit-test-id').value;
+                    const title = document.getElementById('et-title').value.trim();
+                    const topic = document.getElementById('et-topic').value.trim();
+                    const description = document.getElementById('et-desc').value.trim();
+                    const alertEl = document.getElementById('edit-test-alert');
+                    const btn = document.getElementById('btn-edit-test');
+
+                    if (!title) { alertEl.innerHTML = '<div class="alert alert-danger">Title is required.</div>'; return; }
+
+                    const questions = extractQuestionsFromContainer('et-questions-container');
+
+                    btn.disabled = true; btn.textContent = 'Saving…';
+                    try {
+                        await api.updateTest(id, { title, topic: topic || null, description: description || null, questions });
+                        showToast('Test updated successfully!', 'success');
+                        closeModal('modal-edit-test');
+                        loadTests();
+                    } catch (e) {
+                        alertEl.innerHTML = `<div class="alert alert-danger">${e.message}</div>`;
+                    } finally {
+                        btn.disabled = false; btn.textContent = 'Save Changes';
+                    }
+                };
+
+                window.deleteTest = async function (id) {
+                    try {
+                        await api.deleteTest(id);
+                        showToast('Test deleted!', 'success');
+                        closeModal('modal-edit-test');
+                        loadTests();
+                    } catch (e) {
+                        document.getElementById('edit-test-alert').innerHTML = `<div class="alert alert-danger">${e.message}</div>`;
+                    }
+                };
+
+                // ── Groups Management ───────────────────────────────────────────────────────
+                let allGroups = [];
+                window.loadGroups = async function () {
+                    const grid = document.getElementById('groups-grid');
+                    try {
+                        const data = await api.listGroups();
+                        allGroups = data.groups || [];
+
+                        // Populate group dropdown in link modal
+                        const groupSelect = document.getElementById('link-group');
+                        groupSelect.innerHTML = '<option value="">-- All Students (Public Link) --</option>' +
+                            allGroups.map(g => `<option value="${g.id}">${g.name}</option>`).join('');
+
+                        if (!allGroups.length) {
+                            grid.innerHTML = '<div class="card text-center text-muted">No groups yet. Create your first group!</div>';
+                            return;
+                        }
+
+                        grid.innerHTML = allGroups.map(g => `
+                            <div class="card" style="border:1px solid var(--border); transition:0.2s; cursor:pointer;" onclick="viewGroupDetails(${g.id})" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border)'">
+                                <h3 style="margin-bottom:8px;font-family:Outfit;font-size:20px">${g.name}</h3>
+                                <p style="color:var(--text-muted);font-size:14px;margin-bottom:16px">${g.students_count} student(s)</p>
+                                <button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); viewGroupDetails(${g.id})">
+                                    View Group Details &rarr;
+                                </button>
+                            </div>
+                        `).join('');
+
+                    } catch (e) {
+                        grid.innerHTML = `<div class="card text-danger">${e.message}</div>`;
+                    }
+                };
+
+                window.createGroup = async function () {
+                    const name = document.getElementById('cg-name').value.trim();
+                    const alertEl = document.getElementById('create-group-alert');
+                    const btn = document.getElementById('btn-create-group');
+                    alertEl.innerHTML = '';
+
+                    if (!name) { alertEl.innerHTML = '<div class="alert alert-danger">Group name is required.</div>'; return; }
+
+                    btn.disabled = true; btn.textContent = 'Creating...';
+                    try {
+                        await api.createGroup({ name });
+                        showToast('Group created successfully!', 'success');
+                        closeModal('modal-create-group');
+                        document.getElementById('cg-name').value = '';
+                        loadGroups();
+                    } catch (e) {
+                        alertEl.innerHTML = `<div class="alert alert-danger">${e.message}</div>`;
+                    } finally {
+                        btn.disabled = false; btn.textContent = 'Create';
+                    }
+                };
+
+                window.openAddStudentsModal = function (groupId) {
+                    document.getElementById('add-students-group-id').value = groupId;
+                    document.getElementById('as-emails').value = '';
+                    document.getElementById('add-students-alert').innerHTML = '';
+                    openModal('modal-add-students');
+                };
+
+                window.addStudentsToGroup = async function () {
+                    const groupId = document.getElementById('add-students-group-id').value;
+                    const emailsRaw = document.getElementById('as-emails').value;
+                    const emails = emailsRaw.split('\\n').map(e => e.trim()).filter(e => e);
+                    const alertEl = document.getElementById('add-students-alert');
+                    const btn = document.getElementById('btn-add-students');
+                    alertEl.innerHTML = '';
+
+                    if (!emails.length) { alertEl.innerHTML = '<div class="alert alert-danger">Provide at least one email.</div>'; return; }
+
+                    btn.disabled = true; btn.textContent = 'Adding...';
+                    try {
+                        const data = await api.addStudentsToGroup(groupId, { emails });
+                        showToast(data.message, 'success');
+                        if (data.not_found && data.not_found.length > 0) {
+                            alertEl.innerHTML = `<div class="alert alert-warning">Warning: Could not find these student emails:<br/>${data.not_found.join('<br/>')}</div>`;
+                        } else {
+                            closeModal('modal-add-students');
+                        }
+                        loadGroups();
+                    } catch (e) {
+                        alertEl.innerHTML = `<div class="alert alert-danger">${e.message}</div>`;
+                    } finally {
+                        btn.disabled = false; btn.textContent = 'Add Students';
+                    }
+                };
+
+                window.viewGroupDetails = async function (groupId) {
+                    window.currentGroupId = groupId;
+                    showSection('group-details', { preventDefault: () => { }, currentTarget: { getAttribute: () => '/teacher/dashboard/groups/' + groupId } });
+
+                    const titleEl = document.getElementById('gd-title');
+                    const studentsEl = document.getElementById('gd-students-list');
+                    const testsEl = document.getElementById('gd-tests-list');
+
+                    titleEl.textContent = "Loading...";
+                    studentsEl.innerHTML = '<div style="padding:16px" class="text-muted">Loading students...</div>';
+                    testsEl.innerHTML = '<div style="padding:16px" class="text-muted">Loading tests...</div>';
+
+                    try {
+                        const group = await api.getGroup(groupId);
+                        titleEl.textContent = group.name;
+
+                        if (group.students && group.students.length > 0) {
+                            studentsEl.innerHTML = group.students.map(s => `
+                                <div style="padding:12px 16px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
+                                    <div>
+                                        <strong>${s.full_name}</strong><br/>
+                                        <small style="color:var(--text-muted)">${s.email}</small>
+                                    </div>
+                                </div>
+                            `).join('');
+                        } else {
+                            studentsEl.innerHTML = '<div style="padding:16px" class="text-muted">No students in this group yet.</div>';
+                        }
+
+                        // Load tests if not loaded yet
+                        if (!allTests || allTests.length === 0) {
+                            await loadTests();
+                        }
+
+                        if (allTests && allTests.length > 0) {
+                            testsEl.innerHTML = allTests.map(t => `
+                                <div style="padding:12px; border:1px solid var(--border); border-radius:8px; margin-bottom:12px; background:var(--bg-elevated);">
+                                    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px">
+                                        <div>
+                                            <div style="font-weight:600; font-size:15px; margin-bottom:4px; font-family:Outfit">${t.title}</div>
+                                            <div class="badge badge-cyan" style="font-size:11px">${t.topic || 'No topic'}</div>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-primary btn-sm btn-full" onclick="openLinkModalForGroup(${t.id}, ${groupId})">
+                                        🔗 Generate Link for this Group
+                                    </button>
+                                </div>
+                            `).join('');
+                        } else {
+                            testsEl.innerHTML = '<div style="padding:16px" class="text-muted">You have no tests. Create one in My Tests.</div>';
+                        }
+
+                    } catch (e) {
+                        titleEl.textContent = "Error loading group";
+                        studentsEl.innerHTML = `<div style="padding:16px" class="text-danger">${e.message}</div>`;
+                        testsEl.innerHTML = ``;
+                    }
+                };
+
+                window.openLinkModalForGroup = function (testId, groupId) {
+                    openLinkModal(testId);
+                    const sel = document.getElementById('link-group');
+                    if (sel) {
+                        sel.value = String(groupId);
+                        // Optional focus or highlight
+                    }
+                };
+
+                // ── Close on overlay click ─────────────────────────────────────────────────
+                document.querySelectorAll('.modal-overlay').forEach(overlay => {
+                    overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(overlay.id); });
+                });
+
+                loadTests();
+                loadGroups();
+
+                // Check initial URL
+                const initLoc = window.location.pathname;
+                if (initLoc.includes('/groups')) showSection('groups');
+                else if (initLoc.includes('/results')) showSection('results');
+                else showSection('tests');
+            </script>
+</body>
+
+</html>

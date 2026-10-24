@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Panel — PDP Education</title>
+    <meta name="description" content="PDP Education Administrator Login" />
+    <link rel="stylesheet" href="../../assets/css/style.css" />
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .bg-glow {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background: radial-gradient(ellipse 600px 400px at 50% 50%, rgba(99, 102, 241, 0.1) 0%, transparent 70%);
+        }
+
+        .auth-box {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 440px;
+            padding: 0 20px;
+        }
+
+        .admin-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: var(--danger-light);
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+        }
+
+        .admin-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            padding: 40px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .admin-logo {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .admin-logo .icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 12px;
+            background: linear-gradient(135deg, var(--danger), #B91C1C);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 24px rgba(239, 68, 68, 0.35);
+        }
+
+        .admin-logo h1 {
+            font-size: 26px;
+        }
+
+        .admin-logo p {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-glow"></div>
+    <div class="auth-box">
+        <div class="admin-card">
+            <div class="admin-logo">
+                <div style="display:flex; justify-content:center; align-items:center; margin-bottom: 20px;">
+                    <img src="../../assets/img/pdp-education.png" alt="PDP Education"
+                        style="max-width: 180px; background: white; padding: 10px; border-radius: 12px;">
+                </div>
+                <div class="admin-badge">
+                    <svg width="12" height="12" fill="currentColor" viewBox="0 0 20 20">
+                        <path
+                            d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                    Administrator Access
+                </div>
+                <h1>Admin Panel</h1>
+                <p>PDP Education Management System</p>
+            </div>
+
+            <div id="alert-box"></div>
+
+            <div class="form-group">
+                <label class="form-label">Admin Email</label>
+                <input id="admin-email" type="email" class="form-input" value="admin@pdp.uz" autocomplete="email" />
+            </div>
+            <div class="form-group">
+                <label class="form-label">Password</label>
+                <input id="admin-password" type="password" class="form-input" value="Admin@1234"
+                    autocomplete="current-password" />
+            </div>
+            <button id="btn-login" class="btn btn-danger btn-full btn-lg" onclick="doAdminLogin()">
+                Access Admin Panel
+            </button>
+
+            <p class="text-center mt-4" style="font-size:13px;">
+                <a href="/index.html" style="color:var(--text-muted);">← Back to Home</a>
+            </p>
+        </div>
+    </div>
+
+    <script type="module">
+        import { api, setAuth } from '../../assets/js/api.js';
+
+        window.doAdminLogin = async function () {
+            const email = document.getElementById('admin-email').value.trim();
+            const password = document.getElementById('admin-password').value;
+            const alertBox = document.getElementById('alert-box');
+            const btn = document.getElementById('btn-login');
+
+            alertBox.innerHTML = '';
+            btn.disabled = true;
+            btn.textContent = 'Verifying…';
+
+            try {
+                const data = await api.login({ email, password });
+                if (data.role !== 'admin') {
+                    alertBox.innerHTML = `<div class="alert alert-danger">This account does not have admin privileges.</div>`;
+                    return;
+                }
+                setAuth(data);
+                window.location.href = '/pages/admin/dashboard.html';
+            } catch (e) {
+                alertBox.innerHTML = `<div class="alert alert-danger">${e.message}</div>`;
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Access Admin Panel';
+            }
+        };
+
+        document.addEventListener('keydown', e => { if (e.key === 'Enter') window.doAdminLogin(); });
+    </script>
+</body>
+
+</html>

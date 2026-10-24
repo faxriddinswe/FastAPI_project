@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PDP Education — Sign In</title>
+  <meta name="description"
+    content="PDP Education — Student performance tracking, proctored tests, and analytics for teachers and students." />
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap"
+    rel="stylesheet">
+
+  <style>
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: var(--bg-base);
+      overflow: hidden;
+    }
+
+    /* Ambient gradient blobs */
+    .bg-glow {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse 800px 600px at 15% 55%, rgba(99, 102, 241, 0.13) 0%, transparent 65%),
+        radial-gradient(ellipse 600px 500px at 85% 25%, rgba(6, 182, 212, 0.09) 0%, transparent 65%),
+        radial-gradient(ellipse 400px 350px at 50% 90%, rgba(139, 92, 246, 0.07) 0%, transparent 60%);
+    }
+
+    /* ── Auth container ──────────────────────────────────────────────── */
+    .auth-container {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 460px;
+      padding: 0 20px;
+    }
+
+    /* ── Brand ───────────────────────────────────────────────────────── */
+    .brand {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .brand-logo-wrap {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .brand-logo-wrap img {
+      max-width: 220px;
+      background: white;
+      padding: 10px 18px;
+      border-radius: 14px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    .brand-tagline {
+      color: var(--text-muted);
+      font-size: 14px;
+      font-family: Inter, sans-serif;
+    }
+
+    /* ── Card ────────────────────────────────────────────────────────── */
+    .auth-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 36px 40px;
+      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.04), var(--glow);
+      backdrop-filter: blur(12px);
+    }
+
+    /* ── Tabs ────────────────────────────────────────────────────────── */
+    .tabs {
+      display: flex;
+      gap: 4px;
+      background: var(--bg-elevated);
+      border-radius: 12px;
+      padding: 4px;
+      margin-bottom: 28px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      background: transparent;
+      color: var(--text-muted);
+      font-family: Inter, sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, var(--primary), #4f46e5);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(99, 102, 241, 0.45);
+    }
+
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    /* ── Google button ───────────────────────────────────────────────── */
+    .btn-google {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      width: 100%;
+      padding: 13px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text-primary);
+      font-family: Inter, sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+
+    .btn-google:hover {
+      background: rgba(255, 255, 255, 0.11);
+      border-color: rgba(255, 255, 255, 0.25);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+    }
+
+    .btn-google:active {
+      transform: translateY(0);
+    }
+
+    .google-icon {
+      width: 22px;
+      height: 22px;
+      flex-shrink: 0;
+    }
+
+    /* ── Divider ─────────────────────────────────────────────────────── */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 22px 0;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .divider span {
+      color: var(--text-muted);
+      font-size: 12px;
+      font-family: Inter, sans-serif;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    /* ── Password rules ──────────────────────────────────────────────── */
+    .password-rules {
+      margin-top: 8px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px;
+    }
+
+    .rule {
+      font-size: 11px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: color 0.2s;
+    }
+
+    .rule.met {
+      color: var(--success);
+    }
+
+    .rule .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+      flex-shrink: 0;
+    }
+
+    /* ── Animations ──────────────────────────────────────────────────── */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(16px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .auth-container {
+      animation: fadeInUp 0.45s ease both;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="bg-glow"></div>
+
+  <div class="auth-container">
+    <!-- Brand -->
+    <div class="brand">
+      <div class="brand-logo-wrap">
+        <h1>PDP Education</h1>
+      </div>
+      <p class="brand-tagline">Track performance. Master knowledge.</p>
+    </div>
+
+    <!-- Card -->
+    <div class="auth-card">
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tab-btn active" id="tab-login" onclick="switchTab('login')">Sign In</button>
+        <button class="tab-btn" id="tab-signup" onclick="switchTab('signup')">Sign Up</button>
+      </div>
+
+      <!-- ══ LOGIN PANEL ══ -->
+      <div id="panel-login" class="tab-panel active">
+        <!-- Google -->
+        <a href="/auth/google" class="btn-google" id="btn-google-login">
+          <svg class="google-icon" viewBox="0 0 48 48">
+            <path fill="#EA4335"
+              d="M24 9.5c3.54 0 5.95 1.53 7.32 2.8l5.4-5.4C33.46 3.8 29.18 2 24 2 14.82 2 7.08 7.8 4.18 15.86l6.28 4.88C11.93 14.05 17.5 9.5 24 9.5z" />
+            <path fill="#4285F4"
+              d="M46.1 24.5c0-1.62-.14-3.18-.4-4.68H24v8.86h12.44c-.54 2.92-2.18 5.38-4.64 7.04l7.12 5.54C43.18 37.34 46.1 31.38 46.1 24.5z" />
+            <path fill="#FBBC05"
+              d="M10.46 28.26A14.56 14.56 0 0 1 9.5 24c0-1.48.26-2.9.72-4.24L3.94 14.9A22.02 22.02 0 0 0 2 24c0 3.54.84 6.9 2.34 9.86l6.12-5.6z" />
+            <path fill="#34A853"
+              d="M24 46c5.98 0 11.02-1.98 14.68-5.38l-7.12-5.54c-2 1.36-4.54 2.16-7.56 2.16-6.48 0-12.04-4.52-14.04-10.62l-6.28 4.88C7.08 40.2 14.82 46 24 46z" />
+          </svg>
+          Continue with Google
+        </a>
+
+        <div class="divider"><span>or sign in with email</span></div>
+
+        <div id="login-alert"></div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input id="login-email" type="email" class="form-input" placeholder="you@example.com" autocomplete="off" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input id="login-password" type="password" class="form-input" placeholder="••••••••" autocomplete="off" />
+        </div>
+        <button id="btn-login" class="btn btn-primary btn-full btn-lg" onclick="doLogin()">
+          Sign In
+        </button>
+      </div>
+      <!-- ══ SIGNUP PANEL ══ -->
+      <div id="panel-signup" class="tab-panel">
+        <!-- Google -->
+        <a href="/auth/google" class="btn-google" id="btn-google-signup">
+          <svg class="google-icon" viewBox="0 0 48 48">
+            <path fill="#EA4335"
+              d="M24 9.5c3.54 0 5.95 1.53 7.32 2.8l5.4-5.4C33.46 3.8 29.18 2 24 2 14.82 2 7.08 7.8 4.18 15.86l6.28 4.88C11.93 14.05 17.5 9.5 24 9.5z" />
+            <path fill="#4285F4"
+              d="M46.1 24.5c0-1.62-.14-3.18-.4-4.68H24v8.86h12.44c-.54 2.92-2.18 5.38-4.64 7.04l7.12 5.54C43.18 37.34 46.1 31.38 46.1 24.5z" />
+            <path fill="#FBBC05"
+              d="M10.46 28.26A14.56 14.56 0 0 1 9.5 24c0-1.48.26-2.9.72-4.24L3.94 14.9A22.02 22.02 0 0 0 2 24c0 3.54.84 6.9 2.34 9.86l6.12-5.6z" />
+            <path fill="#34A853"
+              d="M24 46c5.98 0 11.02-1.98 14.68-5.38l-7.12-5.54c-2 1.36-4.54 2.16-7.56 2.16-6.48 0-12.04-4.52-14.04-10.62l-6.28 4.88C7.08 40.2 14.82 46 24 46z" />
+          </svg>
+          Sign up with Google
+        </a>
+
+        <div class="divider"><span>or create account with email</span></div>
+
+        <div id="signup-alert"></div>
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input id="signup-name" type="text" class="form-input" placeholder="Jasur Toshmatov" autocomplete="name" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input id="signup-email" type="email" class="form-input" placeholder="you@example.com" autocomplete="email" />
+          <div id="email-error" class="form-error">Invalid email format</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input id="signup-password" type="password" class="form-input"
+            placeholder="Min. 8 chars with A-Z, a-z, 0-9, symbol" autocomplete="new-password"
+            oninput="checkPasswordRules(this.value)" />
+          <div class="password-rules">
+            <div class="rule" id="rule-upper"><span class="dot"></span>Uppercase letter</div>
+            <div class="rule" id="rule-lower"><span class="dot"></span>Lowercase letter</div>
+            <div class="rule" id="rule-digit"><span class="dot"></span>Digit (0-9)</div>
+            <div class="rule" id="rule-special"><span class="dot"></span>Special char</div>
+            <div class="rule" id="rule-length"><span class="dot"></span>8+ characters</div>
+          </div>
+        </div>
+        <button id="btn-signup" class="btn btn-primary btn-full btn-lg" onclick="doSignup()">
+          Create Account
+        </button>
+        <p class="text-muted text-center mt-4" style="font-size:12px">Students only. Teachers are created by admin.</p>
+      </div>
+    </div>
+
+  </div>
+  <script type="module">
+    import { api, setAuth } from './assets/js/api.js';
+    import { showToast } from './assets/js/utils.js';
+
+    window.switchTab = function (tab) {
+      document.querySelectorAll('.tab-btn').forEach(b => {
+        b.classList.toggle('active', b.id === `tab-${tab}`);
+      });
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      document.getElementById(`panel-${tab}`).classList.add('active');
+    };
+
+    const EMAIL_RE = /[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+/;
+    const PWD_RE = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*\-]).{8,}$/;
+
+    window.checkPasswordRules = function (v) {
+      const set = (id, ok) => document.getElementById(id)?.classList.toggle('met', ok);
+      set('rule-upper', /[A-Z]/.test(v));
+      set('rule-lower', /[a-z]/.test(v));
+      set('rule-digit', /[0-9]/.test(v));
+      set('rule-special', /[#?!@$ %^&*\-]/.test(v));
+      set('rule-length', v.length >= 8);
+    };
+
+    function setAlert(id, msg, type = 'danger') {
+      const el = document.getElementById(id);
+      el.innerHTML = msg ? `<div class="alert alert-${type}">${msg}</div>` : '';
+    }
+
+    function setBtnLoading(id, loading, normalLabel) {
+      const btn = document.getElementById(id);
+      btn.disabled = loading;
+      btn.innerHTML = loading
+        ? `<span class="spinner" style="width:20px;height:20px;border-width:2px"></span> Please wait…`
+        : normalLabel;
+    }
+
+    window.doLogin = async function () {
+      const email = document.getElementById('login-email').value.trim();
+      const password = document.getElementById('login-password').value;
+      setAlert('login-alert', '');
+      if (!email || !password) return setAlert('login-alert', 'Please fill in all fields.');
+
+      setBtnLoading('btn-login', true, 'Sign In');
+      try {
+        const data = await api.login({ email, password });
+        setAuth(data);
+        const redirects = {
+          admin: '/pages/admin/dashboard.html',
+          teacher: '/pages/teacher/dashboard.html',
+          student: '/pages/student/dashboard.html',
+        };
+        window.location.href = redirects[data.role] || '/';
+      } catch (e) {
+        setAlert('login-alert', e.message);
+      } finally {
+        setBtnLoading('btn-login', false, 'Sign In');
+      }
+    };
+
+    window.doSignup = async function () {
+      const full_name = document.getElementById('signup-name').value.trim();
+      const email = document.getElementById('signup-email').value.trim();
+      const password = document.getElementById('signup-password').value;
+      setAlert('signup-alert', '');
+
+      if (!full_name || !email || !password) return setAlert('signup-alert', 'Please fill in all fields.');
+      if (!EMAIL_RE.test(email)) return setAlert('signup-alert', 'Invalid email format.');
+      if (!PWD_RE.test(password)) return setAlert('signup-alert', 'Password does not meet requirements. Check the rules above.');
+
+      setBtnLoading('btn-signup', true, 'Create Account');
+      try {
+        await api.signup({ full_name, email, password });
+        setAlert('signup-alert', 'Account created! You can now sign in.', 'success');
+        setTimeout(() => window.switchTab('login'), 1500);
+      } catch (e) {
+        setAlert('signup-alert', e.message);
+      } finally {
+        setBtnLoading('btn-signup', false, 'Create Account');
+      }
+    };
+
+    // Enter key support
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        const activePanel = document.querySelector('.tab-panel.active');
+        if (activePanel?.id === 'panel-login') window.doLogin();
+        else window.doSignup();
+      }
+    });
+  </script>
+</body>
+
+</html>

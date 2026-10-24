@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test Session — PDP Education</title>
+    <link rel="stylesheet" href="../../assets/css/style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/darcula.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/python/python.min.js"></script>
+    <style>
+        body {
+            background: #0F172A;
+        }
+
+        .test-header {
+            background: var(--bg-surface);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .timer {
+            font-family: 'Outfit', monospace;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--danger-light);
+            background: rgba(239, 68, 68, 0.15);
+            padding: 6px 16px;
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .question-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .q-text {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 24px;
+            line-height: 1.5;
+            color: var(--text-primary);
+        }
+
+        .option-label {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 16px 20px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 15px;
+        }
+
+        .option-label:hover {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .option-label input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+        }
+
+        .option-label.selected {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.1);
+            box-shadow: 0 0 0 1px var(--primary);
+        }
+
+        #overlay-start {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .start-box {
+            background: var(--bg-surface);
+            padding: 40px;
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--border);
+            text-align: center;
+            max-width: 500px;
+            box-shadow: var(--shadow-lg), var(--glow);
+        }
+
+        .violation-warning {
+            position: fixed;
+            inset: 0;
+            z-index: 10000;
+            background: rgba(239, 68, 68, 0.95);
+            backdrop-filter: blur(8px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Fullscreen Request Overlay -->
+    <div id="overlay-start">
+        <div class="start-box">
+            <div style="margin-bottom:24px">
+                <svg width="48" height="48" fill="none" stroke="var(--primary)" stroke-width="1.5" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
+                </svg>
+            </div>
+            <h2 style="font-size:24px;margin-bottom:12px;font-family:Outfit">Proctored Test Environment</h2>
+            <p style="color:var(--text-secondary);margin-bottom:24px">
+                You must remain in full-screen mode for the duration of this test.
+                Leaving full-screen more than 3 times will result in an automatic failure (Score: 0).
+            </p>
+            <button class="btn btn-primary btn-lg btn-full" id="btn-start" onclick="enterFullscreenAndStart()">
+                Enter Full-screen & Start
+            </button>
+            <div id="start-error" class="text-danger mt-4" style="font-size:14px"></div>
+        </div>
+    </div>
+
+    <!-- Violation Warning Overlay -->
+    <div id="overlay-violation" class="violation-warning hidden">
+        <svg width="64" height="64" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
+            style="margin-bottom:24px">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+        <h1 style="font-size:32px;font-family:Outfit;margin-bottom:12px">VIOLATION DETECTED</h1>
+        <p style="font-size:18px;opacity:0.9;max-width:500px;margin-bottom:32px" id="violation-msg">
+            You left the full-screen tracking mode. This has been recorded.
+        </p>
+        <button class="btn" style="background:white;color:#EF4444;font-size:16px;padding:12px 32px"
+            onclick="resumeFullscreen()">
+            Return to Test
+        </button>
+    </div>
+
+    <!-- Confirm Submit Modal -->
+    <div id="overlay-confirm" class="violation-warning hidden" style="background: rgba(15, 23, 42, 0.95);">
+        <h2 style="font-size:28px;font-family:Outfit;margin-bottom:12px">Submit Test</h2>
+        <p style="font-size:18px;opacity:0.9;max-width:500px;margin-bottom:32px">
+            Are you ready to submit your answers? Please make sure you have answered all the questions you wanted to.
+        </p>
+        <div style="display:flex;gap:16px;">
+            <button class="btn" style="background:rgba(255,255,255,0.1);color:white;font-size:16px;padding:12px 32px"
+                onclick="document.getElementById('overlay-confirm').classList.add('hidden')">
+                Cancel
+            </button>
+            <button class="btn btn-primary" style="font-size:16px;padding:12px 32px" onclick="submitTest(false)">
+                Confirm & Submit
+            </button>
+        </div>
+    </div>
+
+    <div id="test-content" class="hidden">
+        <div class="test-header">
+            <div>
+                <h2 id="header-title" style="font-size:18px;margin-bottom:4px">Loading…</h2>
+                <div id="header-topic" class="text-muted" style="font-size:13px"></div>
+            </div>
+            <div class="timer" id="timer-display">--:--:--</div>
+        </div>
+
+        <div class="container" style="max-width:800px;padding:40px 20px">
+            <div id="questions-container"></div>
+            <div class="text-center mt-8">
+                <button id="btn-submit" class="btn btn-primary btn-lg" style="min-width:200px"
+                    onclick="submitTestManual()">
+                    Submit Test
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { api } from '../../assets/js/api.js?v=4';
+        import { requireAuth, showToast } from '../../assets/js/utils.js';
+
+        requireAuth('student');
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('token');
+
+        if (!token) {
+            document.getElementById('start-error').textContent = 'Invalid test link. Missing token.';
+            document.getElementById('btn-start').disabled = true;
+        }
+
+        let testInfo = null;
+        let testEndTime = null;
+        let timerInterval = null;
+        let isSubmitting = false;
+
+        // Track intentional manual submit vs event listener triggers
+        let isManualExit = false;
+
+        // Load test data
+        async function loadTest() {
+            try {
+                document.getElementById('start-error').textContent = 'Loading test…';
+                document.getElementById('btn-start').disabled = true;
+
+                testInfo = await api.accessTest(token);
+
+                document.getElementById('header-title').textContent = testInfo.test_title;
+                document.getElementById('header-topic').textContent = testInfo.topic || '';
+                testEndTime = new Date(testInfo.end_time).getTime();
+
+                renderQuestions(testInfo.questions);
+
+                document.getElementById('start-error').textContent = '';
+                document.getElementById('btn-start').disabled = false;
+            } catch (e) {
+                document.getElementById('start-error').textContent = e.message;
+                document.getElementById('btn-start').disabled = true;
+            }
+        }
+
+        function renderQuestions(questions) {
+            const container = document.getElementById('questions-container');
+            container.innerHTML = questions.map((q, i) => {
+                const opts = ['A', 'B', 'C', 'D'];
+                let inputHtml = "";
+
+                if (q.question_type === 'open_ended') {
+                    inputHtml = `<textarea name="q_${q.id}" class="form-textarea" rows="4" placeholder="Write your answer here..." style="width:100%;background:var(--bg-elevated);color:var(--text-primary);padding:16px;border:1px solid var(--border);border-radius:var(--radius-md)"></textarea>`;
+                } else if (q.question_type === 'code_editor') {
+                    inputHtml = `<div class="code-editor-container" style="border-radius:var(--radius-md); overflow:hidden; border:1px solid var(--border);">
+                       <textarea id="code_editor_${q.id}" name="q_${q.id}" class="code-editor-target"></textarea>
+                    </div>`;
+                } else if (q.question_type === 'true_false') {
+                    inputHtml = ['True', 'False'].map(optText => `
+                        <label class="option-label tf-label" onclick="selectOption(this, ${q.id})">
+                          <input type="radio" name="q_${q.id}" value="${optText}">
+                          <strong>${optText}</strong>
+                        </label>
+                    `).join('');
+                } else if (q.question_type === 'matching' && q.options) {
+                    const leftArr = q.options.left || [];
+                    const rightArr = q.options.right || [];
+                    inputHtml = `<div class="matching-container">`;
+                    leftArr.forEach((leftItem, idx) => {
+                        inputHtml += `
+                           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; padding:12px; background:rgba(255,255,255,0.05); border-radius:8px; flex-wrap:wrap; gap:12px;">
+                               <div style="flex:1; min-width:200px;">${leftItem}</div>
+                               <select name="q_${q.id}_match_${idx}" data-left="${leftItem.replace(/"/g, '&quot;')}" class="form-select" style="max-width:250px; flex:1;">
+                                  <option value="">-- Choose Match --</option>
+                                  ${rightArr.map(r => `<option value="${r.replace(/"/g, '&quot;')}">${r}</option>`).join('')}
+                               </select>
+                           </div>
+                        `;
+                    });
+                    inputHtml += `</div>`;
+                } else {
+                    const optionsArr = Array.isArray(q.options) ? q.options : [];
+                    inputHtml = optionsArr.filter(o => o).map((optText, arrIdx) => {
+                        const letter = opts[arrIdx];
+                        return `
+                        <label class="option-label" onclick="selectOption(this, ${q.id})">
+                          <input type="radio" name="q_${q.id}" value="${letter}">
+                          <strong style="margin-right:8px">${letter}.</strong> ${optText}
+                        </label>
+                      `;
+                    }).join('');
+                }
+
+                return `
+        <div class="question-card" id="q_card_${q.id}">
+          <div class="badge badge-cyan mb-4">Question ${i + 1}</div>
+          <div class="q-text">${q.text.replace(/\n/g, '<br/>')}</div>
+          <div class="options">
+            ${inputHtml}
+          </div>
+        </div>
+      `;
+            }).join('');
+
+            setTimeout(() => {
+                document.querySelectorAll('.code-editor-target').forEach(ta => {
+                    const cm = CodeMirror.fromTextArea(ta, {
+                        mode: 'python',
+                        theme: 'darcula',
+                        lineNumbers: true,
+                        indentUnit: 4,
+                        matchBrackets: true
+                    });
+                    cm.on('change', () => {
+                        ta.value = cm.getValue();
+                    });
+                });
+            }, 50);
+        }
+
+        window.selectOption = function (labelEl, qId) {
+            const card = document.getElementById(`q_card_${qId}`);
+            card.querySelectorAll('.option-label').forEach(el => el.classList.remove('selected'));
+            labelEl.classList.add('selected');
+            labelEl.querySelector('input').checked = true;
+        }
+
+        // Timer logic — color shifts green→orange→red
+        function startTimer() {
+            const totalDuration = testEndTime - new Date().getTime();
+
+            function update() {
+                if (isSubmitting) return;
+                const now = new Date().getTime();
+                const distance = testEndTime - now;
+
+                if (distance <= 0) {
+                    clearInterval(timerInterval);
+                    document.getElementById('timer-display').textContent = '00:00';
+                    showToast('Time is up! Auto-submitting…', 'warning');
+                    submitTest(false);
+                    return;
+                }
+
+                const totalSecs = Math.floor(distance / 1000);
+                const m = Math.floor(totalSecs / 60);
+                const s = totalSecs % 60;
+                const h = Math.floor(m / 60);
+                const displayM = m % 60;
+
+                const timerEl = document.getElementById('timer-display');
+                if (h > 0) {
+                    timerEl.textContent = `${h.toString().padStart(2, '0')}:${displayM.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+                } else {
+                    timerEl.textContent = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+                }
+
+                // Color: green (>50%) → orange (20–50%) → red (<20%) → blinking (<5%)
+                const pct = distance / totalDuration;
+                if (pct > 0.5) {
+                    timerEl.style.color = '#10B981';
+                    timerEl.style.borderColor = 'rgba(16,185,129,0.4)';
+                    timerEl.style.background = 'rgba(16,185,129,0.1)';
+                } else if (pct > 0.2) {
+                    timerEl.style.color = '#F59E0B';
+                    timerEl.style.borderColor = 'rgba(245,158,11,0.4)';
+                    timerEl.style.background = 'rgba(245,158,11,0.1)';
+                } else {
+                    timerEl.style.color = 'var(--danger-light)';
+                    timerEl.style.borderColor = 'rgba(239,68,68,0.4)';
+                    timerEl.style.background = 'rgba(239,68,68,0.15)';
+                    // Blink when under 5%
+                    if (pct < 0.05) timerEl.style.opacity = timerEl.style.opacity === '0.4' ? '1' : '0.4';
+                }
+            }
+            update();
+            timerInterval = setInterval(update, 1000);
+        }
+
+        // ── Anti-cheat keyboard blocking ──────────────────────────────────────
+        function blockCheats(e) {
+            const banned = [
+                // Copy / Paste / Cut
+                (e.ctrlKey || e.metaKey) && ['c', 'v', 'x', 'a', 's', 'p', 'u', 'f', 'j'].includes(e.key.toLowerCase()),
+                // Alt+Tab, Alt+F4, Alt+Space
+                e.altKey && ['Tab', 'F4', ' '].includes(e.key),
+                // Win key (Meta)
+                e.key === 'Meta',
+                // F keys that open browser panels
+                ['F1', 'F3', 'F5', 'F6', 'F10', 'F11', 'F12'].includes(e.key),
+                // Ctrl+W (close tab), Ctrl+T (new tab), Ctrl+N (new window)
+                (e.ctrlKey || e.metaKey) && ['w', 't', 'n', 'r'].includes(e.key.toLowerCase()),
+                // PrintScreen
+                e.key === 'PrintScreen',
+                // Escape (would exit fullscreen — handled by fullscreen change)
+                // We DON'T block Escape so browser retains control, but we handle fullscreenchange
+            ];
+            if (banned.some(Boolean)) {
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            }
+        }
+
+        async function triggerViolation() {
+            if (isSubmitting || isManualExit) return;
+            const overlay = document.getElementById('overlay-violation');
+            if (!overlay.classList.contains('hidden')) return; // already showing
+
+            document.getElementById('test-content').classList.add('hidden');
+            overlay.classList.remove('hidden');
+
+            try {
+                const res = await api.reportViolation(token);
+                if (res.auto_submitted) {
+                    isSubmitting = true;
+                    document.getElementById('violation-msg').innerHTML = "<b>Violations exceeded limit.</b><br/>Test has been automatically submitted with a score of zero.";
+                    overlay.querySelector('button').textContent = "View Results";
+                    overlay.querySelector('button').onclick = () => window.location.href = `/pages/test/result.html?token=${token}`;
+                } else {
+                    document.getElementById('violation-msg').textContent = res.message;
+                }
+            } catch (e) {
+                console.error(e);
+                document.getElementById('violation-msg').textContent = "Error recording violation. You must stay in fullscreen.";
+            }
+        }
+
+        function startAntiCheat() {
+            document.addEventListener('keydown', blockCheats, true);
+            // Block right-click context menu
+            document.addEventListener('contextmenu', e => e.preventDefault(), true);
+
+            // Block explicit copy, cut, paste
+            document.addEventListener('copy', e => {
+                e.preventDefault();
+                if (e.clipboardData) e.clipboardData.setData('text/plain', 'Cheating is not allowed.');
+            });
+            document.addEventListener('cut', e => e.preventDefault());
+            document.addEventListener('paste', e => e.preventDefault());
+
+            // Catch Alt-Tab or switching away from the window
+            window.addEventListener('blur', () => {
+                if (isSubmitting || isManualExit || document.getElementById('test-content').classList.contains('hidden')) return;
+                triggerViolation();
+            });
+
+            // Catch minimizing the window or tab switching
+            document.addEventListener('visibilitychange', () => {
+                if (document.visibilityState === 'hidden') {
+                    if (isSubmitting || isManualExit || document.getElementById('test-content').classList.contains('hidden')) return;
+                    triggerViolation();
+                }
+            });
+        }
+
+        function stopAntiCheat() {
+            document.removeEventListener('keydown', blockCheats, true);
+        }
+
+        // Fullscreen flow
+        window.enterFullscreenAndStart = async function () {
+            try {
+                const docEl = document.documentElement;
+                if (docEl.requestFullscreen) {
+                    await docEl.requestFullscreen();
+                } else if (docEl.webkitRequestFullscreen) {
+                    await docEl.webkitRequestFullscreen();
+                } else {
+                    alert("Your browser doesn't support fullscreen mode. Please use Chrome/Firefox/Edge.");
+                    return;
+                }
+
+                document.getElementById('overlay-start').classList.add('hidden');
+                document.getElementById('test-content').classList.remove('hidden');
+                document.addEventListener('fullscreenchange', handleFullscreenChange);
+                startAntiCheat();
+                startTimer();
+            } catch (e) {
+                document.getElementById('start-error').textContent = "Browser denied fullscreen request: " + e.message;
+            }
+        }
+
+        async function handleFullscreenChange() {
+            if (isSubmitting || isManualExit) return;
+
+            const isFS = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
+            if (!isFS) {
+                triggerViolation();
+            }
+        }
+
+        window.resumeFullscreen = async function () {
+            if (isSubmitting) return; // If auto-failed, button redirects anyway
+
+            try {
+                const docEl = document.documentElement;
+                if (docEl.requestFullscreen) {
+                    await docEl.requestFullscreen();
+                } else if (docEl.webkitRequestFullscreen) {
+                    await docEl.webkitRequestFullscreen();
+                }
+
+                document.getElementById('overlay-violation').classList.add('hidden');
+                document.getElementById('test-content').classList.remove('hidden');
+            } catch (e) {
+                alert("You must allow fullscreen to continue the test!");
+            }
+        }
+
+        // Submit test
+        window.submitTestManual = function () {
+            document.getElementById('overlay-confirm').classList.remove('hidden');
+        }
+
+        window.submitTest = async function (forceFail) {
+            if (isSubmitting) return;
+            isSubmitting = true;
+            isManualExit = true; // prevent violation trigger when we exit fullscreen programmatically next
+
+            const btn = document.getElementById('btn-submit');
+            if (btn) { btn.disabled = true; btn.textContent = 'Submitting...'; }
+
+            const answers = [];
+            if (testInfo) {
+                testInfo.questions.forEach(q => {
+                    let val = null;
+                    if (q.question_type === 'open_ended' || q.question_type === 'code_editor') {
+                        const ta = document.querySelector(`textarea[name="q_${q.id}"]`);
+                        if (ta) val = ta.value.trim();
+                    } else if (q.question_type === 'matching') {
+                        const selects = document.querySelectorAll(`select[name^="q_${q.id}_match_"]`);
+                        const matchAnswers = {};
+                        selects.forEach(sel => {
+                            const leftItem = sel.getAttribute('data-left');
+                            if (sel.value) {
+                                matchAnswers[leftItem] = sel.value;
+                            }
+                        });
+                        if (Object.keys(matchAnswers).length > 0) {
+                            val = JSON.stringify(matchAnswers);
+                        }
+                    } else {
+                        const selected = document.querySelector(`input[name="q_${q.id}"]:checked`);
+                        if (selected) val = selected.value;
+                    }
+                    answers.push({
+                        question_id: q.id,
+                        chosen_answer: val || null
+                    });
+                });
+            }
+
+            try {
+                await api.submitTest(token, { answers, force_fail: forceFail });
+
+                // Exit fullscreen if still in it
+                if (document.fullscreenElement) {
+                    await document.exitFullscreen().catch(e => console.log(e));
+                }
+
+                window.location.href = `/pages/test/result.html?token=${token}`;
+            } catch (e) {
+                alert("Error submitting test: " + e.message);
+                isSubmitting = false;
+                isManualExit = false;
+                if (btn) { btn.disabled = false; btn.textContent = 'Submit Test'; }
+            }
+        }
+
+        if (token) loadTest();
+
+    </script>
+</body>
+
+</html>

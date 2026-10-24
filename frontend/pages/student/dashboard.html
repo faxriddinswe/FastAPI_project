@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Student Dashboard — PDP Education</title>
+    <link rel="stylesheet" href="/assets/css/style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+
+<body>
+    <div class="dashboard-layout">
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <img src="/assets/img/pdp-university-logo.png" alt="PDP University"
+                    style="max-width: 160px; filter: var(--logo-filter, none);">
+                <div class="badge badge-primary mt-2" style="font-size: 10px;">STUDENT PORTAL</div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a id="nav-perf" class="nav-item active" href="/student/dashboard" onclick="showSection('perf', event)">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Performance
+                </a>
+                <a id="nav-leaderboard" class="nav-item" href="/student/dashboard/leaderboard"
+                    onclick="showSection('leaderboard', event)">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path
+                            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                    Leaderboard
+                </a>
+                <a id="nav-timetable" class="nav-item" href="/student/dashboard/timetable"
+                    onclick="showSection('timetable', event)">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path
+                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    Time Table
+                </a>
+                <a id="nav-settings" class="nav-item" href="/student/dashboard/settings"
+                    onclick="showSection('settings', event)">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                    My Profile
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div id="theme-toggle" class="nav-item" onclick="handleThemeToggle()"
+                    style="margin-bottom: 12px; border: 1px solid var(--border);">
+                    <svg id="theme-icon-sun" class="hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path
+                            d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 5a7 7 0 100 14 7 7 0 000-14z" />
+                    </svg>
+                    <svg id="theme-icon-moon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path
+                            d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                    <span id="theme-text">Dark Mode</span>
+                </div>
+
+                <div class="flex gap-3" style="align-items: center; margin-bottom: 16px; padding: 0 4px;">
+                    <img id="user-avatar" src="https://ui-avatars.com/api/?name=Student&background=6366F1&color=fff"
+                        style="width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary);">
+                    <div style="overflow: hidden;">
+                        <div id="user-name"
+                            style="font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        </div>
+                        <div id="user-role"
+                            style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;"></div>
+                    </div>
+                </div>
+                <button class="btn btn-secondary btn-full btn-sm" onclick="doLogout()">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path
+                            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                    Sign Out
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Section: Performance -->
+        <main class="main-content" id="section-perf">
+            <div class="page-header">
+                <h1>My Performance</h1>
+                <p>Your test history and topic mastery</p>
+            </div>
+
+            <!-- Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Total Tests Taken</div>
+                    <div class="stat-value" id="stat-total">—</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Average Pass Rate</div>
+                    <div class="stat-value"><span id="stat-pass-rate">—</span>%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Passed / Failed</div>
+                    <div class="stat-value" style="font-size:24px;margin-top:10px">
+                        <span class="text-success" id="stat-passed">—</span> / <span class="text-danger"
+                            id="stat-failed">—</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts -->
+            <div class="grid-2 mb-8">
+                <div class="chart-container">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px">
+                        <h3 style="font-size:16px;">Scores Trend</h3>
+                        <select id="trend-topic-filter" class="form-select"
+                            style="width:140px; padding:4px 8px; font-size:13px" onchange="filterTrendChart()">
+                            <option value="all">All Topics</option>
+                        </select>
+                    </div>
+                    <canvas id="scoresChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3 style="font-size:16px;margin-bottom:16px">Topic Mastery</h3>
+                    <canvas id="topicsChart"></canvas>
+                </div>
+            </div>
+
+            <!-- History Table -->
+            <h3 style="font-size:18px;margin-bottom:16px">Test History</h3>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Test</th>
+                            <th>Topic</th>
+                            <th>Result</th>
+                            <th>Score</th>
+                            <th>Status/Grade</th>
+                            <th>Date Taken</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-tbody">
+                        <tr>
+                            <td colspan="7" class="text-center text-muted">Loading…</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+
+        <!-- Leaderboard Section -->
+        <main class="main-content hidden" id="section-leaderboard">
+            <div class="page-header" style="display:flex; justify-content:space-between; align-items:flex-start">
+                <div>
+                    <h1>🏆 Leaderboard</h1>
+                    <p>Top students ranked by average score</p>
+                </div>
+                <div>
+                    <select id="leaderboard-group-filter" class="form-select" onchange="loadLeaderboard(this.value)">
+                        <option value="">All Students</option>
+                    </select>
+                </div>
+            </div>
+            <div id="my-rank-banner" class="card"
+                style="margin-bottom:24px; border:1px solid var(--border); display:none">
+                <div style="display:flex; align-items:center; gap:20px;">
+                    <div style="font-size:48px; font-family:Outfit; font-weight:800; color:var(--primary-light)"
+                        id="my-rank-num">#—</div>
+                    <div>
+                        <div style="font-size:18px; font-weight:600" id="my-rank-name"></div>
+                        <div style="font-size:13px; color:var(--text-muted)">Your current ranking</div>
+                    </div>
+                    <div style="margin-left:auto; text-align:right">
+                        <div style="font-size:20px; font-weight:800; color:var(--success)" id="my-rank-avg"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width:60px">Rank</th>
+                            <th>Student</th>
+                            <th>Avg Score</th>
+                            <th>Best Score</th>
+                            <th>Tests Passed</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboard-tbody"></tbody>
+                </table>
+            </div>
+        </main>
+
+        <!-- Timetable Section -->
+        <main class="main-content hidden" id="section-timetable">
+            <div class="page-header">
+                <h1>Time Table</h1>
+                <p>Your class schedule</p>
+            </div>
+            <div class="card" style="padding:0; overflow:hidden">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Day</th>
+                            <th>#</th>
+                            <th>Time</th>
+                            <th>Room</th>
+                            <th>Subject</th>
+                            <th>Group</th>
+                        </tr>
+                    </thead>
+                    <tbody id="timetable-tbody"></tbody>
+                </table>
+            </div>
+        </main>
+
+        <!-- Settings / Profile Section -->
+        <main class="main-content hidden" id="section-settings">
+            <div class="page-header">
+                <h1>My Profile</h1>
+                <p>Manage your account and profile picture</p>
+            </div>
+            <div class="grid-2">
+                <div class="card">
+                    <div class="flex-center" style="flex-direction: column; margin-bottom: 24px;">
+                        <div style="position: relative;">
+                            <img id="settings-avatar"
+                                src="https://ui-avatars.com/api/?name=Student&background=6366F1&color=fff"
+                                style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 4px solid var(--primary);">
+                            <button class="btn btn-secondary btn-sm"
+                                style="position: absolute; bottom: 0; right: 0; padding: 6px; border-radius: 50%;"
+                                onclick="document.getElementById('avatar-upload').click()">
+                                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path
+                                        d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                                    <path d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                            </button>
+                            <input type="file" id="avatar-upload" class="hidden" accept="image/*"
+                                onchange="handleAvatarUpload(event)">
+                        </div>
+                        <h2 id="settings-full-name" style="margin-top: 16px;">Student Name</h2>
+                        <p id="settings-email" class="text-muted">student@pdp.uz</p>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" id="prof-full-name" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Phone</label>
+                        <input type="text" id="prof-phone" class="form-input">
+                    </div>
+                    <button class="btn btn-primary btn-full" onclick="saveProfile()">Update Profile</button>
+                </div>
+                <div class="card">
+                    <h3 style="margin-bottom: 16px;">Identity & Academic Details</h3>
+                    <div class="form-group">
+                        <label class="form-label">Nationality</label>
+                        <input type="text" id="prof-nation" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Passport ID</label>
+                        <input type="text" id="prof-passport" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Gender</label>
+                        <select id="prof-gender" class="form-select">
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script type="module">
+        import { api } from '/assets/js/api.js';
+        import { requireAuth, initUserDisplay, logout, formatDate, toggleTheme } from '/assets/js/utils.js';
+
+        const user = requireAuth('student');
+        if (!user) throw new Error('Not student');
+        initUserDisplay();
+        window.doLogout = logout;
+
+        // ── Section switcher ──────────────────────────────────────
+        window.showSection = function (name, event) {
+            if (event) {
+                event.preventDefault();
+                const targetUrl = event.currentTarget.getAttribute('href');
+                window.history.pushState({}, '', targetUrl);
+            }
+            document.querySelectorAll('main.main-content').forEach(s => s.classList.add('hidden'));
+            const section = document.getElementById(`section-${name}`);
+            if (section) section.classList.remove('hidden');
+
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById(`nav-${name}`)?.classList.add('active');
+
+            if (name === 'perf') loadData();
+            if (name === 'leaderboard') loadLeaderboard();
+            if (name === 'timetable') loadTimetable();
+            if (name === 'settings') loadProfile();
+        };
+
+        window.addEventListener('popstate', () => {
+            const loc = window.location.pathname;
+            if (loc.includes('/leaderboard')) showSection('leaderboard');
+            else if (loc.includes('/timetable')) showSection('timetable');
+            else if (loc.includes('/settings')) showSection('settings');
+            else showSection('perf');
+        });
+
+        // ── Theme Toggle ──────────────────────────────────────────
+        window.handleThemeToggle = function () {
+            const newTheme = toggleTheme();
+            updateThemeUI(newTheme);
+        };
+        function updateThemeUI(theme) {
+            const text = document.getElementById('theme-text');
+            const sun = document.getElementById('theme-icon-sun');
+            const moon = document.getElementById('theme-icon-moon');
+            if (theme === 'dark') {
+                text.textContent = 'Light Mode';
+                sun?.classList.remove('hidden');
+                moon?.classList.add('hidden');
+            } else {
+                text.textContent = 'Dark Mode';
+                sun?.classList.add('hidden');
+                moon?.classList.remove('hidden');
+            }
+        }
+        updateThemeUI(localStorage.getItem('pdp_theme') || 'light');
+
+        // Chart instances
+        let scoresChart, topicsChart;
+        let globalSessions = [];
+
+        // Setup Chart.js defaults
+        Chart.defaults.color = '#94A3B8';
+        Chart.defaults.font.family = 'Inter';
+
+        async function loadData() {
+            try {
+                const data = await api.myStats();
+                document.getElementById('stat-total').textContent = data.total_tests;
+                document.getElementById('stat-pass-rate').textContent = data.pass_rate;
+                document.getElementById('stat-passed').textContent = data.passed;
+                document.getElementById('stat-failed').textContent = data.failed;
+
+                const tbody = document.getElementById('history-tbody');
+                if (!data.sessions.length) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">No tests taken yet.</td></tr>';
+                } else {
+                    tbody.innerHTML = data.sessions.map(s => `
+                        <tr>
+                            <td>${s.test_title}</td>
+                            <td>${s.topic ? `<span class="badge badge-primary">${s.topic}</span>` : '—'}</td>
+                            <td><strong>${s.correct_answers || 0} / ${s.total_questions || 0}</strong></td>
+                            <td><strong>${s.score || 0}%</strong></td>
+                            <td>
+                                <span class="badge ${s.status === 'passed' ? 'badge-success' : 'badge-danger'}">${s.status}</span>
+                                ${s.teacher_grade ? `<span class="badge badge-cyan" style="display:block;margin-top:4px">${s.teacher_grade}</span>` : ''}
+                            </td>
+                            <td>${formatDate(s.submitted_at)}</td>
+                        </tr>
+                    `).join('');
+                }
+                globalSessions = data.sessions;
+                renderTrendChart('all');
+            } catch (e) { showToast(e.message, 'error'); }
+        }
+
+        function renderTrendChart(topicFilter) {
+            const filtered = topicFilter === 'all' ? globalSessions : globalSessions.filter(s => s.topic === topicFilter);
+            const sorted = [...filtered].reverse();
+            const ctx = document.getElementById('scoresChart').getContext('2d');
+            if (scoresChart) scoresChart.destroy();
+            scoresChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: sorted.map(s => s.test_title.substring(0, 8)),
+                    datasets: [{ label: 'Score %', data: sorted.map(s => s.score), borderColor: '#6366F1', tension: 0.4 }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+        }
+
+        async function loadLeaderboard(groupId = "") {
+            const tbody = document.getElementById('leaderboard-tbody');
+            tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Loading leaderboard...</td></tr>';
+            try {
+                const data = await api.leaderboard(groupId);
+                tbody.innerHTML = data.rankings.map(r => `
+                    <tr>
+                        <td>#${r.rank}</td>
+                        <td><strong>${r.full_name}</strong></td>
+                        <td>${r.avg_score}%</td>
+                        <td>${r.best_score}%</td>
+                        <td>${r.tests_passed}</td>
+                    </tr>
+                `).join('');
+            } catch (e) { showToast(e.message, 'error'); }
+        }
+
+        async function loadTimetable() {
+            const tbody = document.getElementById('timetable-tbody');
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">Loading schedule...</td></tr>';
+            try {
+                const data = await api.getStudentTimetable();
+                const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+                tbody.innerHTML = data.map(t => `
+                    <tr>
+                        <td><strong>${days[t.day_of_week]}</strong></td>
+                        <td>${t.lesson_number}</td>
+                        <td>${t.start_time} - ${t.end_time}</td>
+                        <td>${t.room}</td>
+                        <td>${t.subject}</td>
+                        <td><span class="badge badge-primary">${t.group_name}</span></td>
+                    </tr>
+                `).join('') || '<tr><td colspan="6" class="text-center text-muted">No schedule found.</td></tr>';
+            } catch (e) { showToast(e.message, 'error'); }
+        }
+
+        async function loadProfile() {
+            try {
+                const p = await api.getStudentProfile();
+                document.getElementById('prof-full-name').value = p.full_name || '';
+                document.getElementById('prof-phone').value = p.phone || '';
+                document.getElementById('prof-gender').value = p.gender || 'Male';
+                document.getElementById('prof-nation').value = p.nationality || '';
+                document.getElementById('prof-passport').value = p.passport_id || '';
+                document.getElementById('settings-full-name').textContent = p.full_name;
+                document.getElementById('settings-email').textContent = p.email;
+                if (p.avatar_url) document.getElementById('settings-avatar').src = p.avatar_url;
+            } catch (e) { showToast(e.message, 'error'); }
+        }
+
+        window.saveProfile = async function () {
+            const payload = {
+                full_name: document.getElementById('prof-full-name').value,
+                phone: document.getElementById('prof-phone').value,
+                gender: document.getElementById('prof-gender').value,
+                nationality: document.getElementById('prof-nation').value,
+                passport_id: document.getElementById('prof-passport').value,
+            };
+            try {
+                await api.updateStudentProfile(payload);
+                showToast('Profile updated!', 'success');
+                initUserDisplay();
+            } catch (e) { showToast(e.message, 'error'); }
+        };
+
+        window.handleAvatarUpload = async function (event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                const base64 = e.target.result;
+                document.getElementById('settings-avatar').src = base64;
+                try {
+                    await api.updateStudentProfile({ avatar_url: base64 });
+                    showToast('Avatar updated!', 'success');
+                    initUserDisplay();
+                } catch (err) { showToast(err.message, 'error'); }
+            };
+            reader.readAsDataURL(file);
+        };
+
+        // Initialize based on URL
+        const loc = window.location.pathname;
+        if (loc.includes('/leaderboard')) showSection('leaderboard');
+        else if (loc.includes('/timetable')) showSection('timetable');
+        else if (loc.includes('/settings')) showSection('settings');
+        else showSection('perf');
+    </script>
+</body>
+
+</html>
